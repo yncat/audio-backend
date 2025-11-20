@@ -10,6 +10,9 @@ __declspec(dllimport) int audio_versionGetMajor();
 __declspec(dllimport) int audio_versionGetMinor();
 __declspec(dllimport) int audio_versionGetPatch();
 
+// Error API
+__declspec(dllimport) void audio_errorGetLast(char* buffer, int size);
+
 #ifdef __cplusplus
 }
 #endif

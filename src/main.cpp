@@ -1,5 +1,10 @@
 #include <Windows.h>
+#include <cstring>
 #include "version.h"
+#include "context.h"
+
+// External declaration of global context
+extern AudioBackendContext* g_context;
 
 // Version API functions
 extern "C" {
@@ -13,6 +18,24 @@ extern "C" {
 
     __declspec(dllexport) int audio_versionGetPatch() {
         return getPatchVersion();
+    }
+
+    __declspec(dllexport) void audio_errorGetLast(char* buffer, int size) {
+        // If global context is NULL, do nothing and return
+        if (g_context == nullptr) {
+            return;
+        }
+
+        // Get the last error string from the context
+        std::string error = g_context->getLastError();
+
+        // Copy up to size - 1 bytes to the buffer
+        if (size > 0) {
+            size_t max_copy = static_cast<size_t>(size - 1);
+            size_t copy_size = (error.length() < max_copy) ? error.length() : max_copy;
+            memcpy(buffer, error.c_str(), copy_size);
+            buffer[copy_size] = '\0';  // Null terminate
+        }
     }
 }
 
