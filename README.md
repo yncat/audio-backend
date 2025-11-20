@@ -16,27 +16,51 @@
 - Visual Studio (MSVC toolchain)
 - x64 Native Tools Command Prompt for VS
 
-### audiobackend.dll のビルド
+### nmake を使用したビルド
 
 1. **x64 Native Tools Command Prompt for VS** を起動
 2. プロジェクトのルートディレクトリに移動
 3. 以下のコマンドを実行:
 
+#### 全てをビルド (DLL + サンプルプログラム)
+
 ```bash
-build_dll.bat
+nmake
+```
+
+または
+
+```bash
+nmake all
+```
+
+#### audiobackend.dll のみビルド
+
+```bash
+nmake dll
 ```
 
 ビルドが成功すると、`bin\audiobackend.dll` が生成されます。
 
-### audiobackend_examples.exe のビルド
-
-サンプルプログラムをビルドするには:
+#### audiobackend_examples.exe のみビルド
 
 ```bash
-build_examples.bat
+nmake examples
 ```
 
 ビルドが成功すると、`bin\audiobackend_examples.exe` が生成されます。
+
+#### ビルド成果物のクリーンアップ
+
+```bash
+nmake clean
+```
+
+#### ヘルプの表示
+
+```bash
+nmake help
+```
 
 ## サンプルプログラムの実行
 
