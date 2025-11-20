@@ -4,7 +4,9 @@
 // Not null when backend is initialized
 AudioBackendContext* g_context = nullptr;
 
-AudioBackendContext::AudioBackendContext() : last_error(""), fmod_system(nullptr) {
+AudioBackendContext::AudioBackendContext() : last_error(""), fmod_system(nullptr), bgm_channel_group(nullptr) {
+    // Initialize BGM slots (32 slots should be enough)
+    bgm_slots.resize(32);
 }
 
 AudioBackendContext::~AudioBackendContext() {
@@ -24,4 +26,16 @@ FMOD::System* AudioBackendContext::GetFmodSystem() const {
 
 void AudioBackendContext::SetFmodSystem(FMOD::System* system) {
     fmod_system = system;
+}
+
+FMOD::ChannelGroup* AudioBackendContext::GetBgmChannelGroup() const {
+    return bgm_channel_group;
+}
+
+void AudioBackendContext::SetBgmChannelGroup(FMOD::ChannelGroup* group) {
+    bgm_channel_group = group;
+}
+
+std::vector<BgmSlot>& AudioBackendContext::GetBgmSlots() {
+    return bgm_slots;
 }

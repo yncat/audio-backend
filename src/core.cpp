@@ -43,6 +43,18 @@ __declspec(dllexport) int audio_coreInitialize() {
     // Create and configure the AudioBackendContext
     AudioBackendContext* context = new AudioBackendContext();
     context->SetFmodSystem(system);
+
+    // Create BGM channel group
+    FMOD::ChannelGroup* bgmGroup = nullptr;
+    result = system->createChannelGroup("BGM", &bgmGroup);
+    if (result != FMOD_OK) {
+        context->SetLastError(std::string("Failed to create BGM channel group: ") + FMOD_ErrorString(result));
+        g_context = context;
+        system->release();
+        return 0;
+    }
+    context->SetBgmChannelGroup(bgmGroup);
+
     g_context = context;
 
     return 1;
