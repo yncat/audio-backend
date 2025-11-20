@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include "../src/audio_backend.h"
 
 void displayMenu() {
     std::cout << "\n================================\n";
@@ -20,7 +21,12 @@ int main() {
     int choice = -1;
 
     std::cout << "Audio Backend Example Program\n";
-    std::cout << "Version 1.0\n";
+
+    // Get and display DLL version
+    int major = audio_versionGetMajor();
+    int minor = audio_versionGetMinor();
+    int patch = audio_versionGetPatch();
+    std::cout << "DLL Version: " << major << "." << minor << "." << patch << "\n";
 
     while (true) {
         displayMenu();

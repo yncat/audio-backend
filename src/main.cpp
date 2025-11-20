@@ -1,4 +1,20 @@
 #include <Windows.h>
+#include "version.h"
+
+// Version API functions
+extern "C" {
+    __declspec(dllexport) int audio_versionGetMajor() {
+        return getMajorVersion();
+    }
+
+    __declspec(dllexport) int audio_versionGetMinor() {
+        return getMinorVersion();
+    }
+
+    __declspec(dllexport) int audio_versionGetPatch() {
+        return getPatchVersion();
+    }
+}
 
 // DLL Entry Point
 BOOL APIENTRY DllMain(HMODULE hModule,
