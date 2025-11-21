@@ -80,10 +80,8 @@ std::vector<char> loadFile(const std::string& path) {
     return buffer;
 }
 
-void testBGMFunctions() {
-    std::cout << "\n--- Testing BGM Functions ---\n";
-
-    // Initialize audio backend first
+// Common initialization for tests
+bool initAudioBackend() {
     std::cout << "Initializing audio backend...\n";
     int result = audio_coreInitialize();
     if (result != 0) {
@@ -91,9 +89,23 @@ void testBGMFunctions() {
         char errorBuffer[512];
         audio_errorGetLast(errorBuffer, sizeof(errorBuffer));
         std::cout << "Error: " << errorBuffer << "\n";
-        return;
+        return false;
     }
     std::cout << "Audio backend initialized successfully\n\n";
+    return true;
+}
+
+// Common cleanup for tests
+void freeAudioBackend() {
+    std::cout << "Freeing audio backend...\n";
+    audio_coreFree();
+    std::cout << "Audio backend freed\n";
+}
+
+void testBGMFunctions() {
+    std::cout << "\n--- Testing BGM Functions ---\n";
+
+    if (!initAudioBackend()) return;
 
     // Load BGM files from assets
     std::cout << "Loading BGM 1 (assets\\bgm_full.ogg)...\n";
@@ -192,9 +204,8 @@ void testBGMFunctions() {
     std::cout << "BGM slots freed\n";
 
     // Free audio backend
-    std::cout << "\nFreeing audio backend...\n";
-    audio_coreFree();
-    std::cout << "Audio backend freed\n";
+    std::cout << "\n";
+    freeAudioBackend();
 
     std::cout << "\n--- BGM Test Completed ---\n";
 }
@@ -202,17 +213,7 @@ void testBGMFunctions() {
 void testLoopPoint() {
     std::cout << "\n--- Testing Loop Point ---\n";
 
-    // Initialize audio backend first
-    std::cout << "Initializing audio backend...\n";
-    int result = audio_coreInitialize();
-    if (result != 0) {
-        std::cout << "FAILURE: Audio backend failed to initialize\n";
-        char errorBuffer[512];
-        audio_errorGetLast(errorBuffer, sizeof(errorBuffer));
-        std::cout << "Error: " << errorBuffer << "\n";
-        return;
-    }
-    std::cout << "Audio backend initialized successfully\n\n";
+    if (!initAudioBackend()) return;
 
     // Load BGM file from assets
     std::cout << "Loading BGM (assets\\cat_music.ogg)...\n";
@@ -245,6 +246,10 @@ void testLoopPoint() {
         return true;
     };
 
+    // Set volume to 0.4 (cat song is loud)
+    std::cout << "Setting BGM volume to 0.4...\n";
+    if (!checkError(audio_globalSetBgmVolume(0.4f), "audio_globalSetBgmVolume")) return;
+
     // Set loop point to 15.50 seconds (15500ms)
     std::cout << "Setting loop point to 15500ms...\n";
     if (!checkError(audio_bgmSetLoopPoint(slot, 15500), "audio_bgmSetLoopPoint")) return;
@@ -269,8 +274,7 @@ void testLoopPoint() {
     if (!checkError(audio_bgmFree(slot), "audio_bgmFree")) return;
 
     // Free audio backend
-    std::cout << "Freeing audio backend...\n";
-    audio_coreFree();
+    freeAudioBackend();
 
     std::cout << "\n--- Loop Point Test Completed ---\n";
 }
