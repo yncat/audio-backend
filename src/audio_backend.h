@@ -5,6 +5,12 @@
 extern "C" {
 #endif
 
+typedef struct {
+    float pan;
+    float volume;
+    float pitch;
+} SoundAttributes;
+
 // Core API
 __declspec(dllimport) int audio_coreInitialize();
 __declspec(dllimport) void audio_coreFree();
@@ -16,6 +22,10 @@ __declspec(dllimport) int audio_versionGetPatch();
 
 // Error API
 __declspec(dllimport) void audio_errorGetLast(char* buffer, int size);
+
+// Sample API
+__declspec(dllimport) int audio_sampleLoad(const void* address, int size, const char* key);
+__declspec(dllimport) int audio_sampleOneshot(const char* key, SoundAttributes* attributes);
 
 // BGM API
 __declspec(dllimport) int audio_globalSetBgmVolume(float volume);

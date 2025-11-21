@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "fmod/fmod.hpp"
 
 // Structure to hold BGM slot data
@@ -23,6 +24,7 @@ private:
     FMOD::System* fmod_system;
     FMOD::ChannelGroup* bgm_channel_group;
     std::vector<BgmSlot> bgm_slots;
+    std::unordered_map<std::string, FMOD::Sound*> samples_map;
 
 public:
     AudioBackendContext();
@@ -41,6 +43,8 @@ public:
     void SetBgmChannelGroup(FMOD::ChannelGroup* group);
 
     std::vector<BgmSlot>& GetBgmSlots();
+
+    std::unordered_map<std::string, FMOD::Sound*>& GetSamplesMap();
 };
 
 // Global function to check if backend is initialized

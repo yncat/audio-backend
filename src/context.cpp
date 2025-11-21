@@ -52,3 +52,7 @@ void AudioBackendContext::SetBgmChannelGroup(FMOD::ChannelGroup* group) {
 std::vector<BgmSlot>& AudioBackendContext::GetBgmSlots() {
     return bgm_slots;
 }
+
+std::unordered_map<std::string, FMOD::Sound*>& AudioBackendContext::GetSamplesMap() {
+    return samples_map;
+}
