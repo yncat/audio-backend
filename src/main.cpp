@@ -87,6 +87,10 @@ extern "C" {
         return bgmSetLoopPoint(slot, ms);
     }
 
+    __declspec(dllexport) int audio_bgmPlay(int slot) {
+        return bgmPlay(slot);
+    }
+
     __declspec(dllexport) int audio_bgmFree(int slot) {
         return bgmFree(slot);
     }

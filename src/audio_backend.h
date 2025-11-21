@@ -27,6 +27,7 @@ __declspec(dllimport) int audio_bgmFadeout(int slot, int ms);
 __declspec(dllimport) int audio_bgmFadein(int slot, int ms);
 __declspec(dllimport) int audio_bgmCrossfade(int slot1, int slot2, int ms);
 __declspec(dllimport) int audio_bgmSetLoopPoint(int slot, int ms);
+__declspec(dllimport) int audio_bgmPlay(int slot);
 __declspec(dllimport) int audio_bgmFree(int slot);
 
 #ifdef __cplusplus

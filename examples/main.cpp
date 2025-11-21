@@ -149,9 +149,9 @@ void testBGMFunctions() {
     std::cout << "\nSetting BGM volume to 0.7...\n";
     if (!checkError(audio_globalSetBgmVolume(0.7f), "audio_globalSetBgmVolume")) return;
 
-    // Test fadein
-    std::cout << "Starting BGM 1 with 1000ms fadein...\n";
-    if (!checkError(audio_bgmFadein(slot1, 1000), "audio_bgmFadein")) return;
+    // Test bgmPlay
+    std::cout << "Starting BGM 1 with bgmPlay...\n";
+    if (!checkError(audio_bgmPlay(slot1), "audio_bgmPlay")) return;
     std::cout << "Playing... (wait 3 seconds)\n";
     waitSeconds(3);
 

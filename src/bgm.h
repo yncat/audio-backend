@@ -10,6 +10,7 @@ int bgmFadeout(int slot, int ms);
 int bgmFadein(int slot, int ms);
 int bgmCrossfade(int slot1, int slot2, int ms);
 int bgmSetLoopPoint(int slot, int ms);
+int bgmPlay(int slot);
 int bgmFree(int slot);
 
 #endif // BGM_H

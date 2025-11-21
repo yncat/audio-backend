@@ -328,6 +328,62 @@ int bgmSetLoopPoint(int slot, int ms) {
     return 0;
 }
 
+// Play BGM (resets position to 0)
+int bgmPlay(int slot) {
+    if (!isBackendInitialized()) {
+        return -1;
+    }
+    if (slot < 0) {
+        g_context->SetLastError("Invalid slot number");
+        return -1;
+    }
+
+    std::vector<BgmSlot>& slots = g_context->GetBgmSlots();
+    if (slot >= static_cast<int>(slots.size()) || !slots[slot].is_used) {
+        g_context->SetLastError("Slot is not in use");
+        return -1;
+    }
+
+    if (slots[slot].sound == nullptr) {
+        g_context->SetLastError("Sound is not loaded");
+        return -1;
+    }
+
+    // Stop existing channel if playing
+    if (slots[slot].channel != nullptr) {
+        slots[slot].channel->stop();
+        slots[slot].channel = nullptr;
+    }
+
+    FMOD::System* system = g_context->GetFmodSystem();
+    FMOD::ChannelGroup* bgmGroup = g_context->GetBgmChannelGroup();
+    FMOD::Channel* channel = nullptr;
+
+    // Start paused to reset position
+    FMOD_RESULT result = system->playSound(slots[slot].sound, bgmGroup, true, &channel);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to play BGM: ") + FMOD_ErrorString(result));
+        return -1;
+    }
+
+    // Reset position to 0
+    result = channel->setPosition(0, FMOD_TIMEUNIT_MS);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set position: ") + FMOD_ErrorString(result));
+        return -1;
+    }
+
+    // Unpause
+    result = channel->setPaused(false);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to unpause BGM: ") + FMOD_ErrorString(result));
+        return -1;
+    }
+
+    slots[slot].channel = channel;
+    return 0;
+}
+
 // Free BGM slot
 int bgmFree(int slot) {
     if (!isBackendInitialized()) {
