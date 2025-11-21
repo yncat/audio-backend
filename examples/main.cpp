@@ -5,6 +5,7 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
+#include <fstream>
 #include "../src/audio_backend.h"
 
 void displayMenu() {
@@ -56,72 +57,21 @@ void testCoreInitFree() {
     std::cout << "\n--- Test Completed ---\n";
 }
 
-// Generate a simple WAV file in memory with a sine wave tone
-std::vector<char> generateSineWaveWAV(float frequency, float duration_seconds, int sample_rate = 44100) {
-    std::vector<char> wav_data;
-
-    // Calculate sizes
-    int num_samples = static_cast<int>(sample_rate * duration_seconds);
-    int data_size = num_samples * 2; // 16-bit mono
-    int file_size = 44 + data_size; // WAV header is 44 bytes
-
-    // Reserve space
-    wav_data.reserve(file_size);
-
-    // Write WAV header
-    // RIFF header
-    wav_data.push_back('R'); wav_data.push_back('I'); wav_data.push_back('F'); wav_data.push_back('F');
-    // File size - 8
-    int chunk_size = file_size - 8;
-    wav_data.push_back(chunk_size & 0xFF);
-    wav_data.push_back((chunk_size >> 8) & 0xFF);
-    wav_data.push_back((chunk_size >> 16) & 0xFF);
-    wav_data.push_back((chunk_size >> 24) & 0xFF);
-    // WAVE
-    wav_data.push_back('W'); wav_data.push_back('A'); wav_data.push_back('V'); wav_data.push_back('E');
-    // fmt chunk
-    wav_data.push_back('f'); wav_data.push_back('m'); wav_data.push_back('t'); wav_data.push_back(' ');
-    // fmt chunk size (16 for PCM)
-    wav_data.push_back(16); wav_data.push_back(0); wav_data.push_back(0); wav_data.push_back(0);
-    // Audio format (1 = PCM)
-    wav_data.push_back(1); wav_data.push_back(0);
-    // Number of channels (1 = mono)
-    wav_data.push_back(1); wav_data.push_back(0);
-    // Sample rate
-    wav_data.push_back(sample_rate & 0xFF);
-    wav_data.push_back((sample_rate >> 8) & 0xFF);
-    wav_data.push_back((sample_rate >> 16) & 0xFF);
-    wav_data.push_back((sample_rate >> 24) & 0xFF);
-    // Byte rate (sample_rate * num_channels * bits_per_sample / 8)
-    int byte_rate = sample_rate * 2;
-    wav_data.push_back(byte_rate & 0xFF);
-    wav_data.push_back((byte_rate >> 8) & 0xFF);
-    wav_data.push_back((byte_rate >> 16) & 0xFF);
-    wav_data.push_back((byte_rate >> 24) & 0xFF);
-    // Block align (num_channels * bits_per_sample / 8)
-    wav_data.push_back(2); wav_data.push_back(0);
-    // Bits per sample
-    wav_data.push_back(16); wav_data.push_back(0);
-    // data chunk
-    wav_data.push_back('d'); wav_data.push_back('a'); wav_data.push_back('t'); wav_data.push_back('a');
-    // data chunk size
-    wav_data.push_back(data_size & 0xFF);
-    wav_data.push_back((data_size >> 8) & 0xFF);
-    wav_data.push_back((data_size >> 16) & 0xFF);
-    wav_data.push_back((data_size >> 24) & 0xFF);
-
-    // Generate sine wave samples
-    const float PI = 3.14159265359f;
-    for (int i = 0; i < num_samples; i++) {
-        float t = static_cast<float>(i) / sample_rate;
-        float sample = std::sin(2.0f * PI * frequency * t);
-        short sample_16bit = static_cast<short>(sample * 32767.0f * 0.5f); // 50% volume
-
-        wav_data.push_back(sample_16bit & 0xFF);
-        wav_data.push_back((sample_16bit >> 8) & 0xFF);
+// Load a file into memory
+std::vector<char> loadFile(const std::string& path) {
+    std::ifstream file(path, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << path << "\n";
+        return {};
     }
-
-    return wav_data;
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> buffer(size);
+    if (!file.read(buffer.data(), size)) {
+        std::cerr << "Failed to read file: " << path << "\n";
+        return {};
+    }
+    return buffer;
 }
 
 void testBGMFunctions() {
@@ -139,13 +89,22 @@ void testBGMFunctions() {
     }
     std::cout << "Audio backend initialized successfully\n\n";
 
-    // Generate test BGM data (440Hz sine wave for 2 seconds - A note)
-    std::cout << "Generating test BGM 1 (440Hz A note)...\n";
-    std::vector<char> bgm1_data = generateSineWaveWAV(440.0f, 2.0f);
+    // Load BGM files from assets
+    std::cout << "Loading BGM 1 (assets\\bgm_full.ogg)...\n";
+    std::vector<char> bgm1_data = loadFile("assets\\bgm_full.ogg");
+    if (bgm1_data.empty()) {
+        std::cout << "FAILURE: Failed to load bgm_full.ogg\n";
+        audio_coreFree();
+        return;
+    }
 
-    // Generate second test BGM data (523Hz sine wave for 2 seconds - C note)
-    std::cout << "Generating test BGM 2 (523Hz C note)...\n";
-    std::vector<char> bgm2_data = generateSineWaveWAV(523.25f, 2.0f);
+    std::cout << "Loading BGM 2 (assets\\bgm_hats.ogg)...\n";
+    std::vector<char> bgm2_data = loadFile("assets\\bgm_hats.ogg");
+    if (bgm2_data.empty()) {
+        std::cout << "FAILURE: Failed to load bgm_hats.ogg\n";
+        audio_coreFree();
+        return;
+    }
 
     // Test loading BGM
     std::cout << "\nLoading BGM 1...\n";

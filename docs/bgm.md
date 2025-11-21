@@ -36,3 +36,8 @@ bgmを解放
 BGMに関連する audio_bgm** の関数群を main.cpp に移動。 main.cpp の中に、 dll export の関数を全て並べることにより、可読性を向上させる。
 元々の関数は同じ名前にすることができないので、 audio_ という prefix を外した形にリネームする。
 main.cpp に dll export の関数を移動したので、その中身は bgm.cpp にある元々の実装をただ呼び出すだけにする。
+
+## revision 3
+サンプルプログラムの変更。
+現在: その場で生成した波形データを使用している。
+変更後: BGM1として assets\bgm_full.ogg を利用する。 BGM 2 として、 assets\bgm_hats.ogg を使用する。
