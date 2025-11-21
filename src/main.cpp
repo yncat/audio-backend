@@ -51,44 +51,44 @@ extern "C" {
     }
 
     // BGM API functions
-    __declspec(dllexport) void audio_globalSetBgmVolume(float volume) {
-        globalSetBgmVolume(volume);
+    __declspec(dllexport) int audio_globalSetBgmVolume(float volume) {
+        return globalSetBgmVolume(volume);
     }
 
     __declspec(dllexport) int audio_bgmLoad(const void* address, int size) {
         return bgmLoad(address, size);
     }
 
-    __declspec(dllexport) void audio_bgmPause(int slot) {
-        bgmPause(slot);
+    __declspec(dllexport) int audio_bgmPause(int slot) {
+        return bgmPause(slot);
     }
 
-    __declspec(dllexport) void audio_bgmResume(int slot) {
-        bgmResume(slot);
+    __declspec(dllexport) int audio_bgmResume(int slot) {
+        return bgmResume(slot);
     }
 
-    __declspec(dllexport) void audio_bgmStop(int slot) {
-        bgmStop(slot);
+    __declspec(dllexport) int audio_bgmStop(int slot) {
+        return bgmStop(slot);
     }
 
-    __declspec(dllexport) void audio_bgmFadeout(int slot, int ms) {
-        bgmFadeout(slot, ms);
+    __declspec(dllexport) int audio_bgmFadeout(int slot, int ms) {
+        return bgmFadeout(slot, ms);
     }
 
-    __declspec(dllexport) void audio_bgmFadein(int slot, int ms) {
-        bgmFadein(slot, ms);
+    __declspec(dllexport) int audio_bgmFadein(int slot, int ms) {
+        return bgmFadein(slot, ms);
     }
 
-    __declspec(dllexport) void audio_bgmCrossfade(int slot1, int slot2, int ms) {
-        bgmCrossfade(slot1, slot2, ms);
+    __declspec(dllexport) int audio_bgmCrossfade(int slot1, int slot2, int ms) {
+        return bgmCrossfade(slot1, slot2, ms);
     }
 
-    __declspec(dllexport) void audio_bgmSetLoopPoint(int slot, int ms) {
-        bgmSetLoopPoint(slot, ms);
+    __declspec(dllexport) int audio_bgmSetLoopPoint(int slot, int ms) {
+        return bgmSetLoopPoint(slot, ms);
     }
 
-    __declspec(dllexport) void audio_bgmFree(int slot) {
-        bgmFree(slot);
+    __declspec(dllexport) int audio_bgmFree(int slot) {
+        return bgmFree(slot);
     }
 }
 
