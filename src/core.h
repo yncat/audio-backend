@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 int coreInitialize();
-void coreUpdate();
 void coreFree();
 
 #ifdef __cplusplus

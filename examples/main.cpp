@@ -57,12 +57,9 @@ void testCoreInitFree() {
     std::cout << "\n--- Test Completed ---\n";
 }
 
-// Wait for specified seconds while updating audio backend
-void waitWithUpdate(int seconds) {
-    for (int i = 0; i < seconds * 10; i++) {
-        audio_coreUpdate();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+// Wait for specified seconds
+void waitSeconds(int seconds) {
+    std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
 
 // Load a file into memory
@@ -156,31 +153,31 @@ void testBGMFunctions() {
     std::cout << "Starting BGM 1 with 1000ms fadein...\n";
     if (!checkError(audio_bgmFadein(slot1, 1000), "audio_bgmFadein")) return;
     std::cout << "Playing... (wait 3 seconds)\n";
-    waitWithUpdate(3);
+    waitSeconds(3);
 
     // Test pause
     std::cout << "\nPausing BGM 1...\n";
     if (!checkError(audio_bgmPause(slot1), "audio_bgmPause")) return;
     std::cout << "Paused for 1 second...\n";
-    waitWithUpdate(1);
+    waitSeconds(1);
 
     // Test resume
     std::cout << "Resuming BGM 1...\n";
     if (!checkError(audio_bgmResume(slot1), "audio_bgmResume")) return;
     std::cout << "Playing... (wait 2 seconds)\n";
-    waitWithUpdate(2);
+    waitSeconds(2);
 
     // Test crossfade
     std::cout << "\nCrossfading from BGM 1 to BGM 2 (2000ms)...\n";
     if (!checkError(audio_bgmCrossfade(slot1, slot2, 2000), "audio_bgmCrossfade")) return;
     std::cout << "Crossfading... (wait 3 seconds)\n";
-    waitWithUpdate(3);
+    waitSeconds(3);
 
     // Test fadeout
     std::cout << "\nFading out BGM 2 (1500ms)...\n";
     if (!checkError(audio_bgmFadeout(slot2, 1500), "audio_bgmFadeout")) return;
     std::cout << "Fading out... (wait 2 seconds)\n";
-    waitWithUpdate(2);
+    waitSeconds(2);
 
     // Test stop
     std::cout << "\nStopping all BGM...\n";

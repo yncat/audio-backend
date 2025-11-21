@@ -1,4 +1,5 @@
 #include "context.h"
+#include "working_thread.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
 
@@ -52,19 +53,18 @@ int coreInitialize() {
 
     g_context->setBackendInitialized(true);
 
+    // Start working thread for automatic FMOD updates
+    if (!startWorkingThread()) {
+        g_context->SetLastError("Failed to start working thread");
+        bgmGroup->release();
+        system->release();
+        g_context->SetBgmChannelGroup(nullptr);
+        g_context->SetFmodSystem(nullptr);
+        g_context->setBackendInitialized(false);
+        return -1;
+    }
+
     return 0;
-}
-
-// Update FMOD system (must be called regularly)
-void coreUpdate() {
-    if (!isBackendInitialized()) {
-        return;
-    }
-
-    FMOD::System* system = g_context->GetFmodSystem();
-    if (system != nullptr) {
-        system->update();
-    }
 }
 
 // Free FMOD and the audio backend
@@ -72,6 +72,9 @@ void coreFree() {
     if (!isBackendInitialized()) {
         return;
     }
+
+    // Stop working thread before closing FMOD
+    stopWorkingThread();
 
     // Get FMOD system and close it
     FMOD::System* system = g_context->GetFmodSystem();
