@@ -17,3 +17,10 @@ g_ctx に samples_map という unordered_map を作成できるようにする�
 ## audio_sampleOneshot(char *key, attributes *sound_attributes)
 keyで指定したサウンドをワンショット再生。完全に使い捨て。
 sound_attributesに入っている値をそのまま設定。FMODの薄いラッパーを意識しているため、独自の変換などをする必要は一切ない。
+
+# サンプルプログラムの追加
+サンプルプログラムのメニューに「sample and oneshot test」を追加。
+assets\ding.ogg をsampleとして読み込む。
+中央、音量100%、ピッチ100%で再生
+パンや音量やピッチを変えて何度か再生して終了。
+

@@ -54,3 +54,16 @@ bgmPlayの関数を作り忘れてたので追加する。
 bgm.cpp: bgmPlay関数を追加。指定されたスロットのBGMを再生する。再生する前に、再生位置を0にリセットする。
 main.cpp: dll entrypointを追加。 audio_bgmPlay
 サンプルプログラムの変更: 最初にBGMを再生するところが、現在fadeinになっている。fadeinは実質crossfadeでテスト可能なので、最初の再生にbgmPlayを利用するように修正すればよい。
+
+# revision 6
+サンプルプログラムに機能追加
+メニューに「ループポイントのテスト」を追加
+このテストを実行すると、以下の画面が出る。
+assets\cat_music.oggをループ再生。ループポイントを15.50秒(15500ms)に設定。
+エンターを押すとフェードアウトした後終了する。
+
+# revision 7
+revision 6 で実装した cat song がめちゃくちゃうるさかったので、最初に bgmVolume を 0.4 に設定
+
+# revision 8
+サンプルプログラムで、 bgm test と loop point test の２箇所に init / free のロジックが書かれている。これらはテストの本質ではないので、共通の関数に切り出して、囲碁増えていくテストでもコード量が増えすぎないようにリファクタリングする。
