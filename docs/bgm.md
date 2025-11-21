@@ -31,3 +31,8 @@ BGMのループポイントを設定(再生し終わったらループポイン�
 
 ## audio_bgmFree
 bgmを解放
+
+# revision 2
+BGMに関連する audio_bgm** の関数群を main.cpp に移動。 main.cpp の中に、 dll export の関数を全て並べることにより、可読性を向上させる。
+元々の関数は同じ名前にすることができないので、 audio_ という prefix を外した形にリネームする。
+main.cpp に dll export の関数を移動したので、その中身は bgm.cpp にある元々の実装をただ呼び出すだけにする。

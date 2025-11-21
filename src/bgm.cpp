@@ -1,3 +1,4 @@
+#include "bgm.h"
 #include "context.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
@@ -6,10 +7,8 @@
 // External declaration of global context
 extern AudioBackendContext* g_context;
 
-extern "C" {
-
 // Set global BGM volume
-__declspec(dllexport) void audio_globalSetBgmVolume(float volume) {
+void globalSetBgmVolume(float volume) {
     if (g_context == nullptr) {
         return;
     }
@@ -23,7 +22,7 @@ __declspec(dllexport) void audio_globalSetBgmVolume(float volume) {
 }
 
 // Load BGM from memory and return slot number
-__declspec(dllexport) int audio_bgmLoad(const void* address, int size) {
+int bgmLoad(const void* address, int size) {
     if (g_context == nullptr) {
         return -1;
     }
@@ -89,7 +88,7 @@ __declspec(dllexport) int audio_bgmLoad(const void* address, int size) {
 }
 
 // Pause BGM
-__declspec(dllexport) void audio_bgmPause(int slot) {
+void bgmPause(int slot) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -105,7 +104,7 @@ __declspec(dllexport) void audio_bgmPause(int slot) {
 }
 
 // Resume BGM
-__declspec(dllexport) void audio_bgmResume(int slot) {
+void bgmResume(int slot) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -129,7 +128,7 @@ __declspec(dllexport) void audio_bgmResume(int slot) {
 }
 
 // Stop BGM
-__declspec(dllexport) void audio_bgmStop(int slot) {
+void bgmStop(int slot) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -146,7 +145,7 @@ __declspec(dllexport) void audio_bgmStop(int slot) {
 }
 
 // Fadeout BGM over specified milliseconds
-__declspec(dllexport) void audio_bgmFadeout(int slot, int ms) {
+void bgmFadeout(int slot, int ms) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -174,7 +173,7 @@ __declspec(dllexport) void audio_bgmFadeout(int slot, int ms) {
 }
 
 // Fadein BGM over specified milliseconds
-__declspec(dllexport) void audio_bgmFadein(int slot, int ms) {
+void bgmFadein(int slot, int ms) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -227,14 +226,14 @@ __declspec(dllexport) void audio_bgmFadein(int slot, int ms) {
 }
 
 // Crossfade between two BGM tracks
-__declspec(dllexport) void audio_bgmCrossfade(int slot1, int slot2, int ms) {
+void bgmCrossfade(int slot1, int slot2, int ms) {
     // Fade out slot1 and fade in slot2
-    audio_bgmFadeout(slot1, ms);
-    audio_bgmFadein(slot2, ms);
+    bgmFadeout(slot1, ms);
+    bgmFadein(slot2, ms);
 }
 
 // Set loop point for BGM (in milliseconds)
-__declspec(dllexport) void audio_bgmSetLoopPoint(int slot, int ms) {
+void bgmSetLoopPoint(int slot, int ms) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -263,7 +262,7 @@ __declspec(dllexport) void audio_bgmSetLoopPoint(int slot, int ms) {
 }
 
 // Free BGM slot
-__declspec(dllexport) void audio_bgmFree(int slot) {
+void bgmFree(int slot) {
     if (g_context == nullptr || slot < 0) {
         return;
     }
@@ -295,5 +294,3 @@ __declspec(dllexport) void audio_bgmFree(int slot) {
     slots[slot].is_used = false;
     slots[slot].loop_point_ms = -1;
 }
-
-} // extern "C"

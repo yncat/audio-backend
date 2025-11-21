@@ -2,12 +2,14 @@
 #include <cstring>
 #include "version.h"
 #include "context.h"
+#include "bgm.h"
 
 // External declaration of global context
 extern AudioBackendContext* g_context;
 
-// Version API functions
+// DLL Export functions
 extern "C" {
+    // Version API functions
     __declspec(dllexport) int audio_versionGetMajor() {
         return getMajorVersion();
     }
@@ -36,6 +38,47 @@ extern "C" {
             memcpy(buffer, error.c_str(), copy_size);
             buffer[copy_size] = '\0';  // Null terminate
         }
+    }
+
+    // BGM API functions
+    __declspec(dllexport) void audio_globalSetBgmVolume(float volume) {
+        globalSetBgmVolume(volume);
+    }
+
+    __declspec(dllexport) int audio_bgmLoad(const void* address, int size) {
+        return bgmLoad(address, size);
+    }
+
+    __declspec(dllexport) void audio_bgmPause(int slot) {
+        bgmPause(slot);
+    }
+
+    __declspec(dllexport) void audio_bgmResume(int slot) {
+        bgmResume(slot);
+    }
+
+    __declspec(dllexport) void audio_bgmStop(int slot) {
+        bgmStop(slot);
+    }
+
+    __declspec(dllexport) void audio_bgmFadeout(int slot, int ms) {
+        bgmFadeout(slot, ms);
+    }
+
+    __declspec(dllexport) void audio_bgmFadein(int slot, int ms) {
+        bgmFadein(slot, ms);
+    }
+
+    __declspec(dllexport) void audio_bgmCrossfade(int slot1, int slot2, int ms) {
+        bgmCrossfade(slot1, slot2, ms);
+    }
+
+    __declspec(dllexport) void audio_bgmSetLoopPoint(int slot, int ms) {
+        bgmSetLoopPoint(slot, ms);
+    }
+
+    __declspec(dllexport) void audio_bgmFree(int slot) {
+        bgmFree(slot);
     }
 }
 
