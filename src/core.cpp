@@ -55,6 +55,18 @@ int coreInitialize() {
     return 0;
 }
 
+// Update FMOD system (must be called regularly)
+void coreUpdate() {
+    if (!isBackendInitialized()) {
+        return;
+    }
+
+    FMOD::System* system = g_context->GetFmodSystem();
+    if (system != nullptr) {
+        system->update();
+    }
+}
+
 // Free FMOD and the audio backend
 void coreFree() {
     if (!isBackendInitialized()) {

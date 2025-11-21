@@ -248,9 +248,6 @@ int bgmFadein(int slot, int ms) {
         slots[slot].channel = channel;
 
         if (channel != nullptr) {
-            // Set initial volume to 0
-            channel->setVolume(0.0f);
-
             // Set up fade
             unsigned long long dspclock;
             int rate;

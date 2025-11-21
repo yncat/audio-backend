@@ -7,6 +7,7 @@ extern "C" {
 
 // Core API
 __declspec(dllimport) int audio_coreInitialize();
+__declspec(dllimport) void audio_coreUpdate();
 __declspec(dllimport) void audio_coreFree();
 
 // Version API

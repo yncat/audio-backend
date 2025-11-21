@@ -15,6 +15,10 @@ extern "C" {
         return coreInitialize();
     }
 
+    __declspec(dllexport) void audio_coreUpdate() {
+        coreUpdate();
+    }
+
     __declspec(dllexport) void audio_coreFree() {
         coreFree();
     }
