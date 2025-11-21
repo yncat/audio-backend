@@ -27,3 +27,14 @@ audioBackendContext を解放する
 ライフサイクルに関連する audio_core** の関数群を main.cpp に移動。 main.cpp の中に、 dll export の関数を全て並べることにより、可読性を向上させる。
 元々の関数は同じ名前にすることができないので、 audio_ という prefix を外した形にリネームする。
 main.cpp に dll export の関数を移動したので、その中身は core.cpp にある元々の実装をただ呼び出すだけにする。
+
+# revision 4
+現状、初期化の状態を g_ctx のnull判定で実装しているため、初期化でエラーが起こった際のlastErrorを取得できるために、煩雑なコードになっている。
+おそらく、 g_ctx に backend_initialized のようなフラグを持たせれば、初期化失敗時にも g_ctx のポインターを null reset する必要がなくなるので、複雑さが解消されるのではないかと思う。
+context.cpp に isBackendInitialized() 関数を追加。
+g_ctx == nullptr then return false
+g_ctx.isBackendInitialized() == false then return false
+return true
+(上記２行は値をそのまま戻すことで１行に変換できる)
+g_ctx の nullptr 判定をしている箇所を探す。　それらを、 先ほど作成した isBackendInitialized() 関数呼び出しに置き換える。
+

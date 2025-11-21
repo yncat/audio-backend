@@ -19,6 +19,7 @@ struct BgmSlot {
 class AudioBackendContext {
 private:
     std::string last_error;
+    bool backend_initialized;
     FMOD::System* fmod_system;
     FMOD::ChannelGroup* bgm_channel_group;
     std::vector<BgmSlot> bgm_slots;
@@ -30,6 +31,9 @@ public:
     void SetLastError(const std::string& error);
     std::string getLastError() const;
 
+    bool isBackendInitialized() const;
+    void setBackendInitialized(bool initialized);
+
     FMOD::System* GetFmodSystem() const;
     void SetFmodSystem(FMOD::System* system);
 
@@ -38,5 +42,8 @@ public:
 
     std::vector<BgmSlot>& GetBgmSlots();
 };
+
+// Global function to check if backend is initialized
+bool isBackendInitialized();
 
 #endif // CONTEXT_H

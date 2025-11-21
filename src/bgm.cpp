@@ -9,7 +9,7 @@ extern AudioBackendContext* g_context;
 
 // Set global BGM volume
 void globalSetBgmVolume(float volume) {
-    if (g_context == nullptr) {
+    if (!isBackendInitialized()) {
         return;
     }
 
@@ -23,7 +23,7 @@ void globalSetBgmVolume(float volume) {
 
 // Load BGM from memory and return slot number
 int bgmLoad(const void* address, int size) {
-    if (g_context == nullptr) {
+    if (!isBackendInitialized()) {
         return -1;
     }
 
@@ -89,7 +89,7 @@ int bgmLoad(const void* address, int size) {
 
 // Pause BGM
 void bgmPause(int slot) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 
@@ -105,7 +105,7 @@ void bgmPause(int slot) {
 
 // Resume BGM
 void bgmResume(int slot) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 
@@ -129,7 +129,7 @@ void bgmResume(int slot) {
 
 // Stop BGM
 void bgmStop(int slot) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 
@@ -146,7 +146,7 @@ void bgmStop(int slot) {
 
 // Fadeout BGM over specified milliseconds
 void bgmFadeout(int slot, int ms) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 
@@ -174,7 +174,7 @@ void bgmFadeout(int slot, int ms) {
 
 // Fadein BGM over specified milliseconds
 void bgmFadein(int slot, int ms) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 
@@ -234,7 +234,7 @@ void bgmCrossfade(int slot1, int slot2, int ms) {
 
 // Set loop point for BGM (in milliseconds)
 void bgmSetLoopPoint(int slot, int ms) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 
@@ -263,7 +263,7 @@ void bgmSetLoopPoint(int slot, int ms) {
 
 // Free BGM slot
 void bgmFree(int slot) {
-    if (g_context == nullptr || slot < 0) {
+    if (!isBackendInitialized() || slot < 0) {
         return;
     }
 

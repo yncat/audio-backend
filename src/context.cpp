@@ -4,7 +4,12 @@
 // Not null when backend is initialized
 AudioBackendContext* g_context = nullptr;
 
-AudioBackendContext::AudioBackendContext() : last_error(""), fmod_system(nullptr), bgm_channel_group(nullptr) {
+// Check if the backend is properly initialized
+bool isBackendInitialized() {
+    return g_context != nullptr && g_context->isBackendInitialized();
+}
+
+AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr) {
     // Initialize BGM slots (32 slots should be enough)
     bgm_slots.resize(32);
 }
@@ -18,6 +23,14 @@ void AudioBackendContext::SetLastError(const std::string& error) {
 
 std::string AudioBackendContext::getLastError() const {
     return last_error;
+}
+
+bool AudioBackendContext::isBackendInitialized() const {
+    return backend_initialized;
+}
+
+void AudioBackendContext::setBackendInitialized(bool initialized) {
+    backend_initialized = initialized;
 }
 
 FMOD::System* AudioBackendContext::GetFmodSystem() const {

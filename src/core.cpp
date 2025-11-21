@@ -10,18 +10,20 @@ extern "C" {
 // Initialize FMOD and the audio backend
 int coreInitialize() {
     // If already initialized, return success immediately
-    if (g_context != nullptr) {
+    if (isBackendInitialized()) {
         return 0;
+    }
+
+    // Create context if not exists
+    if (g_context == nullptr) {
+        g_context = new AudioBackendContext();
     }
 
     // Create FMOD system instance
     FMOD::System* system = nullptr;
     FMOD_RESULT result = FMOD::System_Create(&system);
     if (result != FMOD_OK) {
-        // Create temporary context to store error
-        AudioBackendContext* temp_context = new AudioBackendContext();
-        temp_context->SetLastError(std::string("Failed to create FMOD system: ") + FMOD_ErrorString(result));
-        g_context = temp_context;
+        g_context->SetLastError(std::string("Failed to create FMOD system: ") + FMOD_ErrorString(result));
         return -1;
     }
 
@@ -30,39 +32,32 @@ int coreInitialize() {
     // flags: FMOD_INIT_NORMAL for standard initialization
     result = system->init(512, FMOD_INIT_NORMAL, nullptr);
     if (result != FMOD_OK) {
-        // Create temporary context to store error
-        AudioBackendContext* temp_context = new AudioBackendContext();
-        temp_context->SetLastError(std::string("Failed to initialize FMOD system: ") + FMOD_ErrorString(result));
-        g_context = temp_context;
-
-        // Release the system since initialization failed
+        g_context->SetLastError(std::string("Failed to initialize FMOD system: ") + FMOD_ErrorString(result));
         system->release();
         return -1;
     }
 
-    // Create and configure the AudioBackendContext
-    AudioBackendContext* context = new AudioBackendContext();
-    context->SetFmodSystem(system);
+    g_context->SetFmodSystem(system);
 
     // Create BGM channel group
     FMOD::ChannelGroup* bgmGroup = nullptr;
     result = system->createChannelGroup("BGM", &bgmGroup);
     if (result != FMOD_OK) {
-        context->SetLastError(std::string("Failed to create BGM channel group: ") + FMOD_ErrorString(result));
-        g_context = context;
+        g_context->SetLastError(std::string("Failed to create BGM channel group: ") + FMOD_ErrorString(result));
         system->release();
+        g_context->SetFmodSystem(nullptr);
         return -1;
     }
-    context->SetBgmChannelGroup(bgmGroup);
+    g_context->SetBgmChannelGroup(bgmGroup);
 
-    g_context = context;
+    g_context->setBackendInitialized(true);
 
     return 0;
 }
 
 // Free FMOD and the audio backend
 void coreFree() {
-    if (g_context == nullptr) {
+    if (!isBackendInitialized()) {
         return;
     }
 

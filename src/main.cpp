@@ -34,7 +34,7 @@ extern "C" {
 
     __declspec(dllexport) void audio_errorGetLast(char* buffer, int size) {
         // If global context is NULL, do nothing and return
-        if (g_context == nullptr) {
+        if (g_context == nullptr || size <= 0) {
             return;
         }
 
