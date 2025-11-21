@@ -8,10 +8,10 @@ extern AudioBackendContext* g_context;
 extern "C" {
 
 // Initialize FMOD and the audio backend
-__declspec(dllexport) int audio_coreInitialize() {
+int coreInitialize() {
     // If already initialized, return success immediately
     if (g_context != nullptr) {
-        return 1;
+        return 0;
     }
 
     // Create FMOD system instance
@@ -22,7 +22,7 @@ __declspec(dllexport) int audio_coreInitialize() {
         AudioBackendContext* temp_context = new AudioBackendContext();
         temp_context->SetLastError(std::string("Failed to create FMOD system: ") + FMOD_ErrorString(result));
         g_context = temp_context;
-        return 0;
+        return -1;
     }
 
     // Initialize FMOD system with default parameters
@@ -37,7 +37,7 @@ __declspec(dllexport) int audio_coreInitialize() {
 
         // Release the system since initialization failed
         system->release();
-        return 0;
+        return -1;
     }
 
     // Create and configure the AudioBackendContext
@@ -51,17 +51,17 @@ __declspec(dllexport) int audio_coreInitialize() {
         context->SetLastError(std::string("Failed to create BGM channel group: ") + FMOD_ErrorString(result));
         g_context = context;
         system->release();
-        return 0;
+        return -1;
     }
     context->SetBgmChannelGroup(bgmGroup);
 
     g_context = context;
 
-    return 1;
+    return 0;
 }
 
 // Free FMOD and the audio backend
-__declspec(dllexport) void audio_coreFree() {
+void coreFree() {
     if (g_context == nullptr) {
         return;
     }

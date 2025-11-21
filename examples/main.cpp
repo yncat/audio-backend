@@ -25,7 +25,7 @@ void testCoreInitFree() {
     // Test initialization
     std::cout << "Calling audio_coreInitialize()...\n";
     int result = audio_coreInitialize();
-    if (result == 1) {
+    if (result == 0) {
         std::cout << "SUCCESS: Audio backend initialized\n";
     } else {
         std::cout << "FAILURE: Audio backend failed to initialize\n";
@@ -35,13 +35,13 @@ void testCoreInitFree() {
         return;
     }
 
-    // Test calling initialize again (should return 1 immediately)
+    // Test calling initialize again (should return 0 immediately)
     std::cout << "\nCalling audio_coreInitialize() again (should succeed immediately)...\n";
     result = audio_coreInitialize();
-    if (result == 1) {
-        std::cout << "SUCCESS: Already initialized, returned 1\n";
+    if (result == 0) {
+        std::cout << "SUCCESS: Already initialized, returned 0\n";
     } else {
-        std::cout << "FAILURE: Should have returned 1 for already initialized\n";
+        std::cout << "FAILURE: Should have returned 0 for already initialized\n";
     }
 
     // Test free
@@ -80,7 +80,7 @@ void testBGMFunctions() {
     // Initialize audio backend first
     std::cout << "Initializing audio backend...\n";
     int result = audio_coreInitialize();
-    if (result != 1) {
+    if (result != 0) {
         std::cout << "FAILURE: Audio backend failed to initialize\n";
         char errorBuffer[512];
         audio_errorGetLast(errorBuffer, sizeof(errorBuffer));

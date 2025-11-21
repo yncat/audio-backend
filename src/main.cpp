@@ -3,12 +3,22 @@
 #include "version.h"
 #include "context.h"
 #include "bgm.h"
+#include "core.h"
 
 // External declaration of global context
 extern AudioBackendContext* g_context;
 
 // DLL Export functions
 extern "C" {
+    // Core lifecycle API functions
+    __declspec(dllexport) int audio_coreInitialize() {
+        return coreInitialize();
+    }
+
+    __declspec(dllexport) void audio_coreFree() {
+        coreFree();
+    }
+
     // Version API functions
     __declspec(dllexport) int audio_versionGetMajor() {
         return getMajorVersion();
