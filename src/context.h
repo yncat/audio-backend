@@ -26,6 +26,12 @@ private:
     std::vector<BgmSlot> bgm_slots;
     std::unordered_map<std::string, FMOD::Sound*> samples_map;
 
+    // VR audio related
+    unsigned int vr_plugin_handle;
+    FMOD::ChannelGroup* vr_channel_group;
+    FMOD::DSP* vr_listener_dsp;
+    bool vr_initialized;
+
 public:
     AudioBackendContext();
     ~AudioBackendContext();
@@ -45,6 +51,19 @@ public:
     std::vector<BgmSlot>& GetBgmSlots();
 
     std::unordered_map<std::string, FMOD::Sound*>& GetSamplesMap();
+
+    // VR audio related getters/setters
+    unsigned int GetVrPluginHandle() const;
+    void SetVrPluginHandle(unsigned int handle);
+
+    FMOD::ChannelGroup* GetVrChannelGroup() const;
+    void SetVrChannelGroup(FMOD::ChannelGroup* group);
+
+    FMOD::DSP* GetVrListenerDsp() const;
+    void SetVrListenerDsp(FMOD::DSP* dsp);
+
+    bool isVrInitialized() const;
+    void setVrInitialized(bool initialized);
 };
 
 // Global function to check if backend is initialized

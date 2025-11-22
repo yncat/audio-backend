@@ -40,6 +40,9 @@ __declspec(dllimport) int audio_bgmSetLoopPoint(int slot, int ms);
 __declspec(dllimport) int audio_bgmPlay(int slot);
 __declspec(dllimport) int audio_bgmFree(int slot);
 
+// VR Audio API
+__declspec(dllimport) int audio_vrInitialize(const char* plugin_path);
+
 #ifdef __cplusplus
 }
 #endif

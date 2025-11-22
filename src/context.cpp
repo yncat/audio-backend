@@ -9,7 +9,7 @@ bool isBackendInitialized() {
     return g_context != nullptr && g_context->isBackendInitialized();
 }
 
-AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr) {
+AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr), vr_plugin_handle(0), vr_channel_group(nullptr), vr_listener_dsp(nullptr), vr_initialized(false) {
     // Initialize BGM slots (32 slots should be enough)
     bgm_slots.resize(32);
 }
@@ -55,4 +55,36 @@ std::vector<BgmSlot>& AudioBackendContext::GetBgmSlots() {
 
 std::unordered_map<std::string, FMOD::Sound*>& AudioBackendContext::GetSamplesMap() {
     return samples_map;
+}
+
+unsigned int AudioBackendContext::GetVrPluginHandle() const {
+    return vr_plugin_handle;
+}
+
+void AudioBackendContext::SetVrPluginHandle(unsigned int handle) {
+    vr_plugin_handle = handle;
+}
+
+FMOD::ChannelGroup* AudioBackendContext::GetVrChannelGroup() const {
+    return vr_channel_group;
+}
+
+void AudioBackendContext::SetVrChannelGroup(FMOD::ChannelGroup* group) {
+    vr_channel_group = group;
+}
+
+FMOD::DSP* AudioBackendContext::GetVrListenerDsp() const {
+    return vr_listener_dsp;
+}
+
+void AudioBackendContext::SetVrListenerDsp(FMOD::DSP* dsp) {
+    vr_listener_dsp = dsp;
+}
+
+bool AudioBackendContext::isVrInitialized() const {
+    return vr_initialized;
+}
+
+void AudioBackendContext::setVrInitialized(bool initialized) {
+    vr_initialized = initialized;
 }

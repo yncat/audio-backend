@@ -16,6 +16,7 @@ void displayMenu() {
     std::cout << "2: Test BGM Functions\n";
     std::cout << "3: Test Loop Point\n";
     std::cout << "4: Test Sample and Oneshot\n";
+    std::cout << "5: Test VR Initialization\n";
     std::cout << "0: Quit\n";
     std::cout << "================================\n";
     std::cout << "Select an option: ";
@@ -349,6 +350,40 @@ void testSampleOneshot() {
     std::cout << "\n--- Sample and Oneshot Test Completed ---\n";
 }
 
+void testVrInitialization() {
+    std::cout << "\n--- Testing VR Initialization ---\n";
+
+    if (!initAudioBackend()) return;
+
+    // Test VR initialization
+    std::cout << "Initializing VR audio with resonanceaudio.dll...\n";
+    int result = audio_vrInitialize("lib\\resonanceaudio.dll");
+    if (result == 0) {
+        std::cout << "SUCCESS: VR audio initialized\n";
+    } else {
+        std::cout << "FAILURE: VR audio failed to initialize\n";
+        char errorBuffer[512];
+        audio_errorGetLast(errorBuffer, sizeof(errorBuffer));
+        std::cout << "Error: " << errorBuffer << "\n";
+        audio_coreFree();
+        return;
+    }
+
+    // Test calling initialize again (should return 0 immediately)
+    std::cout << "\nCalling audio_vrInitialize() again (should succeed immediately)...\n";
+    result = audio_vrInitialize("lib\\resonanceaudio.dll");
+    if (result == 0) {
+        std::cout << "SUCCESS: Already initialized, returned 0\n";
+    } else {
+        std::cout << "FAILURE: Should have returned 0 for already initialized\n";
+    }
+
+    // Free audio backend
+    freeAudioBackend();
+
+    std::cout << "\n--- VR Initialization Test Completed ---\n";
+}
+
 void clearInput() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -395,6 +430,10 @@ int main() {
 
             case 4:
                 testSampleOneshot();
+                break;
+
+            case 5:
+                testVrInitialization();
                 break;
 
             default:

@@ -5,6 +5,7 @@
 #include "bgm.h"
 #include "core.h"
 #include "sample.h"
+#include "vr.h"
 
 // External declaration of global context
 extern AudioBackendContext* g_context;
@@ -103,6 +104,11 @@ extern "C" {
 
     __declspec(dllexport) int audio_sampleOneshot(const char* key, SoundAttributes* attributes) {
         return sampleOneshot(key, attributes);
+    }
+
+    // VR Audio API functions
+    __declspec(dllexport) int audio_vrInitialize(const char* plugin_path) {
+        return vrInitialize(plugin_path);
     }
 }
 
