@@ -43,6 +43,9 @@ __declspec(dllimport) int audio_bgmFree(int slot);
 // VR Audio API
 __declspec(dllimport) int audio_vrInitialize(const char* plugin_path);
 
+// Plugin Inspector API
+__declspec(dllimport) int audio_corePluginInspect(const char* plugin_path, const char* output_path);
+
 #ifdef __cplusplus
 }
 #endif

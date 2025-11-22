@@ -6,6 +6,7 @@
 #include "core.h"
 #include "sample.h"
 #include "vr.h"
+#include "plugin_inspector.h"
 
 // External declaration of global context
 extern AudioBackendContext* g_context;
@@ -109,6 +110,11 @@ extern "C" {
     // VR Audio API functions
     __declspec(dllexport) int audio_vrInitialize(const char* plugin_path) {
         return vrInitialize(plugin_path);
+    }
+
+    // Plugin Inspector API functions
+    __declspec(dllexport) int audio_corePluginInspect(const char* plugin_path, const char* output_path) {
+        return corePluginInspect(plugin_path, output_path);
     }
 }
 
