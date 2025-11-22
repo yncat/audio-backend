@@ -23,11 +23,11 @@ DLL_TARGET = $(BIN_DIR)\audiobackend.dll
 EXAMPLES_TARGET = $(BIN_DIR)\audiobackend_examples.exe
 
 # Source files (automatically find all .cpp files)
-DLL_SOURCES = $(SRC_DIR)\main.cpp $(SRC_DIR)\version.cpp $(SRC_DIR)\context.cpp $(SRC_DIR)\core.cpp $(SRC_DIR)\bgm.cpp $(SRC_DIR)\working_thread.cpp $(SRC_DIR)\sample.cpp
+DLL_SOURCES = $(SRC_DIR)\main.cpp $(SRC_DIR)\version.cpp $(SRC_DIR)\context.cpp $(SRC_DIR)\core.cpp $(SRC_DIR)\bgm.cpp $(SRC_DIR)\working_thread.cpp $(SRC_DIR)\sample.cpp $(SRC_DIR)\vr.cpp $(SRC_DIR)\plugin_inspector.cpp
 EXAMPLES_SOURCES = $(EXAMPLES_DIR)\main.cpp
 
 # Object files
-DLL_OBJECTS = $(BIN_DIR)\main_dll.obj $(BIN_DIR)\version.obj $(BIN_DIR)\context.obj $(BIN_DIR)\core.obj $(BIN_DIR)\bgm.obj $(BIN_DIR)\working_thread.obj $(BIN_DIR)\sample.obj
+DLL_OBJECTS = $(BIN_DIR)\main_dll.obj $(BIN_DIR)\version.obj $(BIN_DIR)\context.obj $(BIN_DIR)\core.obj $(BIN_DIR)\bgm.obj $(BIN_DIR)\working_thread.obj $(BIN_DIR)\sample.obj $(BIN_DIR)\vr.obj $(BIN_DIR)\plugin_inspector.obj
 EXAMPLES_OBJECTS = $(BIN_DIR)\main_examples.obj
 
 # Default target - build both
@@ -71,6 +71,14 @@ $(BIN_DIR)\working_thread.obj: $(SRC_DIR)\working_thread.cpp $(SRC_DIR)\working_
 $(BIN_DIR)\sample.obj: $(SRC_DIR)\sample.cpp $(SRC_DIR)\sample.h $(SRC_DIR)\context.h
 	@echo Compiling $(SRC_DIR)\sample.cpp...
 	$(CC) $(DLL_CFLAGS) /c $(SRC_DIR)\sample.cpp /Fo:$(BIN_DIR)\sample.obj
+
+$(BIN_DIR)\vr.obj: $(SRC_DIR)\vr.cpp $(SRC_DIR)\vr.h $(SRC_DIR)\context.h
+	@echo Compiling $(SRC_DIR)\vr.cpp...
+	$(CC) $(DLL_CFLAGS) /c $(SRC_DIR)\vr.cpp /Fo:$(BIN_DIR)\vr.obj
+
+$(BIN_DIR)\plugin_inspector.obj: $(SRC_DIR)\plugin_inspector.cpp $(SRC_DIR)\plugin_inspector.h $(SRC_DIR)\context.h
+	@echo Compiling $(SRC_DIR)\plugin_inspector.cpp...
+	$(CC) $(DLL_CFLAGS) /c $(SRC_DIR)\plugin_inspector.cpp /Fo:$(BIN_DIR)\plugin_inspector.obj
 
 # Build the examples executable
 $(EXAMPLES_TARGET): $(BIN_DIR) $(EXAMPLES_OBJECTS) $(DLL_TARGET)
