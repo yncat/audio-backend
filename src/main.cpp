@@ -4,6 +4,7 @@
 #include "context.h"
 #include "bgm.h"
 #include "core.h"
+#include "sample.h"
 
 // External declaration of global context
 extern AudioBackendContext* g_context;
@@ -93,6 +94,15 @@ extern "C" {
 
     __declspec(dllexport) int audio_bgmFree(int slot) {
         return bgmFree(slot);
+    }
+
+    // Sample API functions
+    __declspec(dllexport) int audio_sampleLoad(const void* address, int size, const char* key) {
+        return sampleLoad(address, size, key);
+    }
+
+    __declspec(dllexport) int audio_sampleOneshot(const char* key, SoundAttributes* attributes) {
+        return sampleOneshot(key, attributes);
     }
 }
 

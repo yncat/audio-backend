@@ -1,4 +1,3 @@
-#define BUILDING_DLL
 #include "sample.h"
 #include "context.h"
 #include "fmod/fmod.hpp"
@@ -6,9 +5,7 @@
 
 extern AudioBackendContext* g_context;
 
-extern "C" {
-
-DLL_EXPORT int audio_sampleLoad(const void* address, int size, const char* key) {
+int sampleLoad(const void* address, int size, const char* key) {
     if (!isBackendInitialized()) {
         return -1;
     }
@@ -45,7 +42,7 @@ DLL_EXPORT int audio_sampleLoad(const void* address, int size, const char* key) 
     return 0;
 }
 
-DLL_EXPORT int audio_sampleOneshot(const char* key, SoundAttributes* attributes) {
+int sampleOneshot(const char* key, SoundAttributes* attributes) {
     if (!isBackendInitialized()) {
         return -1;
     }
@@ -81,6 +78,4 @@ DLL_EXPORT int audio_sampleOneshot(const char* key, SoundAttributes* attributes)
     channel->setPaused(false);
 
     return 0;
-}
-
 }

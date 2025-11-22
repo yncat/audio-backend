@@ -24,3 +24,7 @@ assets\ding.ogg をsampleとして読み込む。
 中央、音量100%、ピッチ100%で再生
 パンや音量やピッチを変えて何度か再生して終了。
 
+# revision 2
+サンプルに関連する audio_sample** の関数群を main.cpp に移動。 main.cpp の中に、 dll export の関数を全て並べることにより、可読性を向上させる。
+元々の関数は同じ名前にすることができないので、 audio_ という prefix を外した形にリネームする。
+main.cpp に dll export の関数を移動したので、その中身は sample.cpp にある元々の実装をただ呼び出すだけにする。
