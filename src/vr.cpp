@@ -47,9 +47,21 @@ int vrInitialize(const char* plugin_path) {
     }
     g_context->SetVrChannelGroup(vrGroup);
 
-    // Create the Resonance Audio Listener DSP
+    // Get the Resonance Audio Listener plugin (nested plugin at index 0)
+    unsigned int listener_plugin_handle = 0;
+    result = system->getNestedPlugin(plugin_handle, 0, &listener_plugin_handle);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to get Resonance Audio Listener plugin (index 0): ") + FMOD_ErrorString(result));
+        vrGroup->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrChannelGroup(nullptr);
+        g_context->SetVrPluginHandle(0);
+        return -1;
+    }
+
+    // Create the Resonance Audio Listener DSP using the nested plugin handle
     FMOD::DSP* listenerDsp = nullptr;
-    result = system->createDSPByPlugin(plugin_handle, &listenerDsp);
+    result = system->createDSPByPlugin(listener_plugin_handle, &listenerDsp);
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to create Resonance Audio Listener DSP: ") + FMOD_ErrorString(result));
         vrGroup->release();

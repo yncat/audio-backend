@@ -31,3 +31,8 @@ DSP::setParameterData(int index, void *data, unsigned int length)
      │ 1. resonanceaudio.dll の配置と読み込み処理                                      │                      
      │ 2. 初期化時にプラグインを System::loadPlugin() で読み込み                       │                      
      │ 3. 3Dサウンド用のチャンネルグループを作成し、Listener DSPをそこに追加                               │                      
+
+# revision 2
+listener dspの登録処理を少し変更
+resonance_audio_parameters_list.md によると、 listener plugin は nested plugin の index 0 にあるということがわかった。
+なので、明示的に index 0 を指定して読み込むように変更。
