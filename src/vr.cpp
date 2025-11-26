@@ -82,9 +82,26 @@ int vrInitialize(const char* plugin_path) {
         g_context->SetVrListenerDsp(nullptr);
         g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
         return -1;
     }
     g_context->SetVrListenerDsp(listenerDsp);
+
+    // Get the Resonance Audio Source plugin (nested plugin at index 2)
+    unsigned int source_plugin_handle = 0;
+    result = system->getNestedPlugin(plugin_handle, 2, &source_plugin_handle);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to get Resonance Audio Source plugin (index 2): ") + FMOD_ErrorString(result));
+        listenerDsp->release();
+        vrGroup->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrChannelGroup(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+    g_context->SetVrSourcePluginHandle(source_plugin_handle);
 
     // Set the initial 3D listener attributes
     ListenerAttributes& listener = g_context->GetVrListenerAttributes();
@@ -97,6 +114,7 @@ int vrInitialize(const char* plugin_path) {
         g_context->SetVrListenerDsp(nullptr);
         g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
         return -1;
     }
 

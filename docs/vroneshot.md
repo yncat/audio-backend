@@ -56,3 +56,7 @@ assets/ding.wav をいろんな設定で再生していく。
 今度はピッチを0.8にしてまた一周
 またすこし待って
 今度はボリュームを0.3にしてまた一周
+
+# revision 2
+vrOneshot系の関数で作成されるソースに resonance audio source の DSP がアタッチされていないので、アタッチする必要があります。
+docs\resonance_audio_parameters_list.md によると、 resonance audio の nested plugin index 2 が source の DSP になっているそうです。

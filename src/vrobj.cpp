@@ -89,6 +89,28 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
         return -1;
     }
 
+    // Attach Resonance Audio Source DSP to the channel
+    unsigned int source_plugin_handle = g_context->GetVrSourcePluginHandle();
+    if (source_plugin_handle != 0) {
+        FMOD::DSP* sourceDsp = nullptr;
+        result = system->createDSPByPlugin(source_plugin_handle, &sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP: ") + FMOD_ErrorString(result));
+            channel->stop();
+            return -1;
+        }
+
+        result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+        // Release our reference, the channel now owns it
+        sourceDsp->release();
+    }
+
     // Apply sound attributes
     // Set volume
     result = channel->setVolume(sound_attributes->volume);
@@ -185,6 +207,28 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
         g_context->SetLastError(std::string("Failed to set 3D attributes: ") + FMOD_ErrorString(result));
         channel->stop();
         return -1;
+    }
+
+    // Attach Resonance Audio Source DSP to the channel
+    unsigned int source_plugin_handle = g_context->GetVrSourcePluginHandle();
+    if (source_plugin_handle != 0) {
+        FMOD::DSP* sourceDsp = nullptr;
+        result = system->createDSPByPlugin(source_plugin_handle, &sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP: ") + FMOD_ErrorString(result));
+            channel->stop();
+            return -1;
+        }
+
+        result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+        // Release our reference, the channel now owns it
+        sourceDsp->release();
     }
 
     // Apply sound attributes

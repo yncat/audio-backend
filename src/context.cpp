@@ -9,7 +9,7 @@ bool isBackendInitialized() {
     return g_context != nullptr && g_context->isBackendInitialized();
 }
 
-AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr), vr_plugin_handle(0), vr_channel_group(nullptr), vr_listener_dsp(nullptr), vr_initialized(false) {
+AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr), vr_plugin_handle(0), vr_source_plugin_handle(0), vr_channel_group(nullptr), vr_listener_dsp(nullptr), vr_initialized(false) {
     // Initialize BGM slots (32 slots should be enough)
     bgm_slots.resize(32);
 
@@ -70,6 +70,14 @@ unsigned int AudioBackendContext::GetVrPluginHandle() const {
 
 void AudioBackendContext::SetVrPluginHandle(unsigned int handle) {
     vr_plugin_handle = handle;
+}
+
+unsigned int AudioBackendContext::GetVrSourcePluginHandle() const {
+    return vr_source_plugin_handle;
+}
+
+void AudioBackendContext::SetVrSourcePluginHandle(unsigned int handle) {
+    vr_source_plugin_handle = handle;
 }
 
 FMOD::ChannelGroup* AudioBackendContext::GetVrChannelGroup() const {

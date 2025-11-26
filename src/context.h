@@ -29,6 +29,7 @@ private:
 
     // VR audio related
     unsigned int vr_plugin_handle;
+    unsigned int vr_source_plugin_handle;
     FMOD::ChannelGroup* vr_channel_group;
     FMOD::DSP* vr_listener_dsp;
     bool vr_initialized;
@@ -57,6 +58,9 @@ public:
     // VR audio related getters/setters
     unsigned int GetVrPluginHandle() const;
     void SetVrPluginHandle(unsigned int handle);
+
+    unsigned int GetVrSourcePluginHandle() const;
+    void SetVrSourcePluginHandle(unsigned int handle);
 
     FMOD::ChannelGroup* GetVrChannelGroup() const;
     void SetVrChannelGroup(FMOD::ChannelGroup* group);
