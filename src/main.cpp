@@ -6,6 +6,7 @@
 #include "core.h"
 #include "sample.h"
 #include "vr.h"
+#include "vrobj.h"
 #include "plugin_inspector.h"
 
 // External declaration of global context
@@ -110,6 +111,14 @@ extern "C" {
     // VR Audio API functions
     __declspec(dllexport) int audio_vrInitialize(const char* plugin_path) {
         return vrInitialize(plugin_path);
+    }
+
+    __declspec(dllexport) int audio_vrOneshotRelative(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes, bool follow) {
+        return vrOneshotRelative(sample_key, position3d, sound_attributes, follow);
+    }
+
+    __declspec(dllexport) int audio_vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes) {
+        return vrOneshotAbsolute(sample_key, position3d, sound_attributes);
     }
 
     // Plugin Inspector API functions

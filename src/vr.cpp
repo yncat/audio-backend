@@ -86,6 +86,20 @@ int vrInitialize(const char* plugin_path) {
     }
     g_context->SetVrListenerDsp(listenerDsp);
 
+    // Set the initial 3D listener attributes
+    ListenerAttributes& listener = g_context->GetVrListenerAttributes();
+    result = system->set3DListenerAttributes(0, &listener.pos, &listener.vel, &listener.forward, &listener.up);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set 3D listener attributes: ") + FMOD_ErrorString(result));
+        listenerDsp->release();
+        vrGroup->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrChannelGroup(nullptr);
+        g_context->SetVrPluginHandle(0);
+        return -1;
+    }
+
     g_context->setVrInitialized(true);
 
     return 0;

@@ -11,6 +11,14 @@ typedef struct {
     float pitch;
 } SoundAttributes;
 
+// 3D position structure
+// Maps to FMOD coordinate system: width->X, depth->Z, height->Y
+typedef struct {
+    int width;   // X in FMOD
+    int depth;   // Z in FMOD
+    int height;  // Y in FMOD
+} Position3D;
+
 // Core API
 __declspec(dllimport) int audio_coreInitialize();
 __declspec(dllimport) void audio_coreFree();
@@ -42,6 +50,8 @@ __declspec(dllimport) int audio_bgmFree(int slot);
 
 // VR Audio API
 __declspec(dllimport) int audio_vrInitialize(const char* plugin_path);
+__declspec(dllimport) int audio_vrOneshotRelative(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes, bool follow);
+__declspec(dllimport) int audio_vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes);
 
 // Plugin Inspector API
 __declspec(dllimport) int audio_corePluginInspect(const char* plugin_path, const char* output_path);

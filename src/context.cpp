@@ -12,6 +12,13 @@ bool isBackendInitialized() {
 AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr), vr_plugin_handle(0), vr_channel_group(nullptr), vr_listener_dsp(nullptr), vr_initialized(false) {
     // Initialize BGM slots (32 slots should be enough)
     bgm_slots.resize(32);
+
+    // Initialize VR listener attributes to default values
+    // pos=0,0,0 vel=0,0,0 forward=0,0,1 up=0,1,0
+    vr_listener_attributes.pos = { 0.0f, 0.0f, 0.0f };
+    vr_listener_attributes.vel = { 0.0f, 0.0f, 0.0f };
+    vr_listener_attributes.forward = { 0.0f, 0.0f, 1.0f };
+    vr_listener_attributes.up = { 0.0f, 1.0f, 0.0f };
 }
 
 AudioBackendContext::~AudioBackendContext() {
@@ -87,4 +94,12 @@ bool AudioBackendContext::isVrInitialized() const {
 
 void AudioBackendContext::setVrInitialized(bool initialized) {
     vr_initialized = initialized;
+}
+
+ListenerAttributes& AudioBackendContext::GetVrListenerAttributes() {
+    return vr_listener_attributes;
+}
+
+void AudioBackendContext::SetVrListenerAttributes(const ListenerAttributes& attributes) {
+    vr_listener_attributes = attributes;
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include "fmod/fmod.hpp"
+#include "vrstructs.h"
 
 // Structure to hold BGM slot data
 struct BgmSlot {
@@ -31,6 +32,7 @@ private:
     FMOD::ChannelGroup* vr_channel_group;
     FMOD::DSP* vr_listener_dsp;
     bool vr_initialized;
+    ListenerAttributes vr_listener_attributes;
 
 public:
     AudioBackendContext();
@@ -64,6 +66,9 @@ public:
 
     bool isVrInitialized() const;
     void setVrInitialized(bool initialized);
+
+    ListenerAttributes& GetVrListenerAttributes();
+    void SetVrListenerAttributes(const ListenerAttributes& attributes);
 };
 
 // Global function to check if backend is initialized
