@@ -3,6 +3,7 @@
 #include "sound_attributes.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
+#include "fmod/fmod_dsp.h"
 
 // External declaration of global context
 extern AudioBackendContext* g_context;
@@ -45,7 +46,7 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
     }
     FMOD::Sound* sound = it->second;
 
-    // Create a channel for this sound
+    // Create a channel for this sound (paused initially)
     FMOD::Channel* channel = nullptr;
     FMOD_RESULT result = system->playSound(sound, vrGroup, true, &channel);
     if (result != FMOD_OK) {
@@ -53,19 +54,7 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
         return -1;
     }
 
-    // Set 3D mode
-    FMOD_MODE mode = FMOD_3D | FMOD_3D_WORLDRELATIVE;
-    if (follow) {
-        mode |= FMOD_3D_HEADRELATIVE;
-    }
-    result = channel->setMode(mode);
-    if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to set 3D mode: ") + FMOD_ErrorString(result));
-        channel->stop();
-        return -1;
-    }
-
-    // Calculate world position
+    // Calculate world position for DSP
     FMOD_VECTOR fmod_pos;
     if (follow) {
         // For head-relative sounds, use the position as-is (relative to listener)
@@ -78,37 +67,6 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
         fmod_pos.x = listener.pos.x + static_cast<float>(position3d->width);
         fmod_pos.y = listener.pos.y + static_cast<float>(position3d->height);
         fmod_pos.z = listener.pos.z + static_cast<float>(position3d->depth);
-    }
-
-    // Set 3D position
-    FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
-    result = channel->set3DAttributes(&fmod_pos, &vel);
-    if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to set 3D attributes: ") + FMOD_ErrorString(result));
-        channel->stop();
-        return -1;
-    }
-
-    // Attach Resonance Audio Source DSP to the channel
-    unsigned int source_plugin_handle = g_context->GetVrSourcePluginHandle();
-    if (source_plugin_handle != 0) {
-        FMOD::DSP* sourceDsp = nullptr;
-        result = system->createDSPByPlugin(source_plugin_handle, &sourceDsp);
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP: ") + FMOD_ErrorString(result));
-            channel->stop();
-            return -1;
-        }
-
-        result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
-            sourceDsp->release();
-            channel->stop();
-            return -1;
-        }
-        // Release our reference, the channel now owns it
-        sourceDsp->release();
     }
 
     // Apply sound attributes
@@ -129,6 +87,49 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
     }
 
     // Note: pan is ignored for 3D sounds as per spec
+
+    // Attach Resonance Audio Source DSP to the channel
+    unsigned int source_plugin_handle = g_context->GetVrSourcePluginHandle();
+    if (source_plugin_handle != 0) {
+        FMOD::DSP* sourceDsp = nullptr;
+        result = system->createDSPByPlugin(source_plugin_handle, &sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP: ") + FMOD_ErrorString(result));
+            channel->stop();
+            return -1;
+        }
+
+        result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Set 3D attributes on the Resonance Audio Source DSP (parameter index 8)
+        FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+        FMOD_DSP_PARAMETER_3DATTRIBUTES dsp_3d_attrs = {};
+        dsp_3d_attrs.relative.position = fmod_pos;
+        dsp_3d_attrs.relative.velocity = vel;
+        dsp_3d_attrs.relative.forward = { 0.0f, 0.0f, 1.0f };
+        dsp_3d_attrs.relative.up = { 0.0f, 1.0f, 0.0f };
+        dsp_3d_attrs.absolute.position = fmod_pos;
+        dsp_3d_attrs.absolute.velocity = vel;
+        dsp_3d_attrs.absolute.forward = { 0.0f, 0.0f, 1.0f };
+        dsp_3d_attrs.absolute.up = { 0.0f, 1.0f, 0.0f };
+
+        result = sourceDsp->setParameterData(8, &dsp_3d_attrs, sizeof(dsp_3d_attrs));
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set 3D attributes on Source DSP: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Release our reference, the channel now owns it
+        sourceDsp->release();
+    }
 
     // Unpause and play
     result = channel->setPaused(false);
@@ -177,7 +178,7 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
     }
     FMOD::Sound* sound = it->second;
 
-    // Create a channel for this sound
+    // Create a channel for this sound (paused initially)
     FMOD::Channel* channel = nullptr;
     FMOD_RESULT result = system->playSound(sound, vrGroup, true, &channel);
     if (result != FMOD_OK) {
@@ -185,51 +186,11 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
         return -1;
     }
 
-    // Set 3D mode (world-relative)
-    FMOD_MODE mode = FMOD_3D | FMOD_3D_WORLDRELATIVE;
-    result = channel->setMode(mode);
-    if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to set 3D mode: ") + FMOD_ErrorString(result));
-        channel->stop();
-        return -1;
-    }
-
-    // Set absolute world position
+    // Set absolute world position for DSP
     FMOD_VECTOR fmod_pos;
     fmod_pos.x = static_cast<float>(position3d->width);
     fmod_pos.y = static_cast<float>(position3d->height);
     fmod_pos.z = static_cast<float>(position3d->depth);
-
-    // Set 3D position
-    FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
-    result = channel->set3DAttributes(&fmod_pos, &vel);
-    if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to set 3D attributes: ") + FMOD_ErrorString(result));
-        channel->stop();
-        return -1;
-    }
-
-    // Attach Resonance Audio Source DSP to the channel
-    unsigned int source_plugin_handle = g_context->GetVrSourcePluginHandle();
-    if (source_plugin_handle != 0) {
-        FMOD::DSP* sourceDsp = nullptr;
-        result = system->createDSPByPlugin(source_plugin_handle, &sourceDsp);
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP: ") + FMOD_ErrorString(result));
-            channel->stop();
-            return -1;
-        }
-
-        result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
-            sourceDsp->release();
-            channel->stop();
-            return -1;
-        }
-        // Release our reference, the channel now owns it
-        sourceDsp->release();
-    }
 
     // Apply sound attributes
     // Set volume
@@ -249,6 +210,49 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
     }
 
     // Note: pan is ignored for 3D sounds as per spec
+
+    // Attach Resonance Audio Source DSP to the channel
+    unsigned int source_plugin_handle = g_context->GetVrSourcePluginHandle();
+    if (source_plugin_handle != 0) {
+        FMOD::DSP* sourceDsp = nullptr;
+        result = system->createDSPByPlugin(source_plugin_handle, &sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP: ") + FMOD_ErrorString(result));
+            channel->stop();
+            return -1;
+        }
+
+        result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Set 3D attributes on the Resonance Audio Source DSP (parameter index 8)
+        FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+        FMOD_DSP_PARAMETER_3DATTRIBUTES dsp_3d_attrs = {};
+        dsp_3d_attrs.relative.position = fmod_pos;
+        dsp_3d_attrs.relative.velocity = vel;
+        dsp_3d_attrs.relative.forward = { 0.0f, 0.0f, 1.0f };
+        dsp_3d_attrs.relative.up = { 0.0f, 1.0f, 0.0f };
+        dsp_3d_attrs.absolute.position = fmod_pos;
+        dsp_3d_attrs.absolute.velocity = vel;
+        dsp_3d_attrs.absolute.forward = { 0.0f, 0.0f, 1.0f };
+        dsp_3d_attrs.absolute.up = { 0.0f, 1.0f, 0.0f };
+
+        result = sourceDsp->setParameterData(8, &dsp_3d_attrs, sizeof(dsp_3d_attrs));
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set 3D attributes on Source DSP: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Release our reference, the channel now owns it
+        sourceDsp->release();
+    }
 
     // Unpause and play
     result = channel->setPaused(false);
