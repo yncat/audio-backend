@@ -30,10 +30,11 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
         return -1;
     }
 
-    // Get the VR channel group
-    FMOD::ChannelGroup* vrGroup = g_context->GetVrChannelGroup();
-    if (vrGroup == nullptr) {
-        g_context->SetLastError("VR channel group is null");
+    // Get the master channel group for VR audio
+    FMOD::ChannelGroup* masterGroup = nullptr;
+    FMOD_RESULT result = system->getMasterChannelGroup(&masterGroup);
+    if (result != FMOD_OK || masterGroup == nullptr) {
+        g_context->SetLastError("Failed to get master channel group");
         return -1;
     }
 
@@ -48,7 +49,7 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
 
     // Create a channel for this sound (paused initially)
     FMOD::Channel* channel = nullptr;
-    FMOD_RESULT result = system->playSound(sound, vrGroup, true, &channel);
+    result = system->playSound(sound, masterGroup, true, &channel);
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to play sound: ") + FMOD_ErrorString(result));
         return -1;
@@ -102,6 +103,25 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
         result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
         if (result != FMOD_OK) {
             g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Set distance attenuation parameters (similar to AGPP implementation)
+        // Parameter [2]: Min Distance
+        result = sourceDsp->setParameterFloat(2, 0.5f);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set min distance: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Parameter [3]: Max Distance
+        result = sourceDsp->setParameterFloat(3, 200.0f);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set max distance: ") + FMOD_ErrorString(result));
             sourceDsp->release();
             channel->stop();
             return -1;
@@ -162,10 +182,11 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
         return -1;
     }
 
-    // Get the VR channel group
-    FMOD::ChannelGroup* vrGroup = g_context->GetVrChannelGroup();
-    if (vrGroup == nullptr) {
-        g_context->SetLastError("VR channel group is null");
+    // Get the master channel group for VR audio
+    FMOD::ChannelGroup* masterGroup = nullptr;
+    FMOD_RESULT result = system->getMasterChannelGroup(&masterGroup);
+    if (result != FMOD_OK || masterGroup == nullptr) {
+        g_context->SetLastError("Failed to get master channel group");
         return -1;
     }
 
@@ -180,7 +201,7 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
 
     // Create a channel for this sound (paused initially)
     FMOD::Channel* channel = nullptr;
-    FMOD_RESULT result = system->playSound(sound, vrGroup, true, &channel);
+    result = system->playSound(sound, masterGroup, true, &channel);
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to play sound: ") + FMOD_ErrorString(result));
         return -1;
@@ -225,6 +246,25 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
         result = channel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, sourceDsp);
         if (result != FMOD_OK) {
             g_context->SetLastError(std::string("Failed to add Source DSP to channel: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Set distance attenuation parameters (similar to AGPP implementation)
+        // Parameter [2]: Min Distance
+        result = sourceDsp->setParameterFloat(2, 0.5f);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set min distance: ") + FMOD_ErrorString(result));
+            sourceDsp->release();
+            channel->stop();
+            return -1;
+        }
+
+        // Parameter [3]: Max Distance
+        result = sourceDsp->setParameterFloat(3, 200.0f);
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set max distance: ") + FMOD_ErrorString(result));
             sourceDsp->release();
             channel->stop();
             return -1;

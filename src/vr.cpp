@@ -36,25 +36,22 @@ int vrInitialize(const char* plugin_path) {
     }
     g_context->SetVrPluginHandle(plugin_handle);
 
-    // Create a channel group for VR audio
-    FMOD::ChannelGroup* vrGroup = nullptr;
-    result = system->createChannelGroup("VR", &vrGroup);
+    // Get the master channel group
+    FMOD::ChannelGroup* masterGroup = nullptr;
+    result = system->getMasterChannelGroup(&masterGroup);
     if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to create VR channel group: ") + FMOD_ErrorString(result));
+        g_context->SetLastError(std::string("Failed to get master channel group: ") + FMOD_ErrorString(result));
         system->unloadPlugin(plugin_handle);
         g_context->SetVrPluginHandle(0);
         return -1;
     }
-    g_context->SetVrChannelGroup(vrGroup);
 
     // Get the Resonance Audio Listener plugin (nested plugin at index 0)
     unsigned int listener_plugin_handle = 0;
     result = system->getNestedPlugin(plugin_handle, 0, &listener_plugin_handle);
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to get Resonance Audio Listener plugin (index 0): ") + FMOD_ErrorString(result));
-        vrGroup->release();
         system->unloadPlugin(plugin_handle);
-        g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
         return -1;
     }
@@ -64,28 +61,53 @@ int vrInitialize(const char* plugin_path) {
     result = system->createDSPByPlugin(listener_plugin_handle, &listenerDsp);
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to create Resonance Audio Listener DSP: ") + FMOD_ErrorString(result));
-        vrGroup->release();
         system->unloadPlugin(plugin_handle);
-        g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
         return -1;
     }
 
-    // Add the Listener DSP to the VR channel group
+    // Add the Listener DSP to the master channel group
     // The Listener DSP processes spatial audio and room effects
-    result = vrGroup->addDSP(FMOD_CHANNELCONTROL_DSP_TAIL, listenerDsp);
+    result = masterGroup->addDSP(FMOD_CHANNELCONTROL_DSP_TAIL, listenerDsp);
     if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to add Listener DSP to VR channel group: ") + FMOD_ErrorString(result));
+        g_context->SetLastError(std::string("Failed to add Listener DSP to master channel group: ") + FMOD_ErrorString(result));
         listenerDsp->release();
-        vrGroup->release();
         system->unloadPlugin(plugin_handle);
         g_context->SetVrListenerDsp(nullptr);
-        g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
         g_context->SetVrSourcePluginHandle(0);
         return -1;
     }
     g_context->SetVrListenerDsp(listenerDsp);
+
+    // Debug: Print all DSPs attached to master channel group
+    int numDSPs = 0;
+    result = masterGroup->getNumDSPs(&numDSPs);
+    if (result == FMOD_OK) {
+        printf("=== Master Channel Group DSPs (Total: %d) ===\n", numDSPs);
+        for (int i = 0; i < numDSPs; i++) {
+            FMOD::DSP* dsp = nullptr;
+            result = masterGroup->getDSP(i, &dsp);
+            if (result == FMOD_OK && dsp != nullptr) {
+                char name[256] = {0};
+                unsigned int version = 0;
+                int channels = 0;
+                int configWidth = 0;
+                int configHeight = 0;
+                result = dsp->getInfo(name, &version, &channels, &configWidth, &configHeight);
+                if (result == FMOD_OK) {
+                    printf("  [%d] Name: %s, Version: %u, Channels: %d\n", i, name, version, channels);
+                } else {
+                    printf("  [%d] DSP (failed to get info: %s)\n", i, FMOD_ErrorString(result));
+                }
+            } else {
+                printf("  [%d] Failed to get DSP: %s\n", i, FMOD_ErrorString(result));
+            }
+        }
+        printf("=====================================\n");
+    } else {
+        printf("Failed to get number of DSPs: %s\n", FMOD_ErrorString(result));
+    }
 
     // Get the Resonance Audio Source plugin (nested plugin at index 2)
     unsigned int source_plugin_handle = 0;
@@ -93,10 +115,8 @@ int vrInitialize(const char* plugin_path) {
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to get Resonance Audio Source plugin (index 2): ") + FMOD_ErrorString(result));
         listenerDsp->release();
-        vrGroup->release();
         system->unloadPlugin(plugin_handle);
         g_context->SetVrListenerDsp(nullptr);
-        g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
         g_context->SetVrSourcePluginHandle(0);
         return -1;
@@ -109,10 +129,8 @@ int vrInitialize(const char* plugin_path) {
     if (result != FMOD_OK) {
         g_context->SetLastError(std::string("Failed to set 3D listener attributes: ") + FMOD_ErrorString(result));
         listenerDsp->release();
-        vrGroup->release();
         system->unloadPlugin(plugin_handle);
         g_context->SetVrListenerDsp(nullptr);
-        g_context->SetVrChannelGroup(nullptr);
         g_context->SetVrPluginHandle(0);
         g_context->SetVrSourcePluginHandle(0);
         return -1;
