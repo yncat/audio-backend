@@ -9,7 +9,7 @@ bool isBackendInitialized() {
     return g_context != nullptr && g_context->isBackendInitialized();
 }
 
-AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr), vr_plugin_handle(0), vr_source_plugin_handle(0), vr_listener_dsp(nullptr), vr_initialized(false) {
+AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized(false), fmod_system(nullptr), bgm_channel_group(nullptr), vr_plugin_handle(0), vr_source_plugin_handle(0), vr_listener_dsp(nullptr), vr_player_source_dsp(nullptr), vr_initialized(false), vr_player_sounds_group(nullptr) {
     // Initialize BGM slots (32 slots should be enough)
     bgm_slots.resize(32);
 
@@ -19,6 +19,11 @@ AudioBackendContext::AudioBackendContext() : last_error(""), backend_initialized
     vr_listener_attributes.vel = { 0.0f, 0.0f, 0.0f };
     vr_listener_attributes.forward = { 0.0f, 0.0f, 1.0f };
     vr_listener_attributes.up = { 0.0f, 1.0f, 0.0f };
+
+    // Initialize VR player position and orientation to default values
+    vr_player_position = { 0.0f, 0.0f, 0.0f };
+    vr_player_forward = { 0.0f, 0.0f, 1.0f };
+    vr_player_up = { 0.0f, 1.0f, 0.0f };
 }
 
 AudioBackendContext::~AudioBackendContext() {
@@ -88,6 +93,14 @@ void AudioBackendContext::SetVrListenerDsp(FMOD::DSP* dsp) {
     vr_listener_dsp = dsp;
 }
 
+FMOD::DSP* AudioBackendContext::GetVrPlayerSourceDsp() const {
+    return vr_player_source_dsp;
+}
+
+void AudioBackendContext::SetVrPlayerSourceDsp(FMOD::DSP* dsp) {
+    vr_player_source_dsp = dsp;
+}
+
 bool AudioBackendContext::isVrInitialized() const {
     return vr_initialized;
 }
@@ -102,4 +115,36 @@ ListenerAttributes& AudioBackendContext::GetVrListenerAttributes() {
 
 void AudioBackendContext::SetVrListenerAttributes(const ListenerAttributes& attributes) {
     vr_listener_attributes = attributes;
+}
+
+FMOD::ChannelGroup* AudioBackendContext::GetVrPlayerSoundsGroup() const {
+    return vr_player_sounds_group;
+}
+
+void AudioBackendContext::SetVrPlayerSoundsGroup(FMOD::ChannelGroup* group) {
+    vr_player_sounds_group = group;
+}
+
+FMOD_VECTOR& AudioBackendContext::GetVrPlayerPosition() {
+    return vr_player_position;
+}
+
+void AudioBackendContext::SetVrPlayerPosition(const FMOD_VECTOR& position) {
+    vr_player_position = position;
+}
+
+FMOD_VECTOR& AudioBackendContext::GetVrPlayerForward() {
+    return vr_player_forward;
+}
+
+void AudioBackendContext::SetVrPlayerForward(const FMOD_VECTOR& forward) {
+    vr_player_forward = forward;
+}
+
+FMOD_VECTOR& AudioBackendContext::GetVrPlayerUp() {
+    return vr_player_up;
+}
+
+void AudioBackendContext::SetVrPlayerUp(const FMOD_VECTOR& up) {
+    vr_player_up = up;
 }

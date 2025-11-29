@@ -15,6 +15,14 @@ typedef struct {
     int height;  // Y in FMOD
 } Position3D;
 
+// Unit vector structure for rotations
+// Maps to FMOD coordinate system: width->X, depth->Z, height->Y
+typedef struct {
+    float width;   // X in FMOD
+    float depth;   // Z in FMOD
+    float height;  // Y in FMOD
+} UnitVector3D;
+
 // Listener attributes structure
 typedef struct {
     FMOD_VECTOR pos;

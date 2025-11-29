@@ -31,8 +31,13 @@ private:
     unsigned int vr_plugin_handle;
     unsigned int vr_source_plugin_handle;
     FMOD::DSP* vr_listener_dsp;
+    FMOD::DSP* vr_player_source_dsp;  // Source DSP for player_sounds group
     bool vr_initialized;
     ListenerAttributes vr_listener_attributes;
+    FMOD::ChannelGroup* vr_player_sounds_group;
+    FMOD_VECTOR vr_player_position;
+    FMOD_VECTOR vr_player_forward;
+    FMOD_VECTOR vr_player_up;
 
 public:
     AudioBackendContext();
@@ -64,11 +69,26 @@ public:
     FMOD::DSP* GetVrListenerDsp() const;
     void SetVrListenerDsp(FMOD::DSP* dsp);
 
+    FMOD::DSP* GetVrPlayerSourceDsp() const;
+    void SetVrPlayerSourceDsp(FMOD::DSP* dsp);
+
     bool isVrInitialized() const;
     void setVrInitialized(bool initialized);
 
     ListenerAttributes& GetVrListenerAttributes();
     void SetVrListenerAttributes(const ListenerAttributes& attributes);
+
+    FMOD::ChannelGroup* GetVrPlayerSoundsGroup() const;
+    void SetVrPlayerSoundsGroup(FMOD::ChannelGroup* group);
+
+    FMOD_VECTOR& GetVrPlayerPosition();
+    void SetVrPlayerPosition(const FMOD_VECTOR& position);
+
+    FMOD_VECTOR& GetVrPlayerForward();
+    void SetVrPlayerForward(const FMOD_VECTOR& forward);
+
+    FMOD_VECTOR& GetVrPlayerUp();
+    void SetVrPlayerUp(const FMOD_VECTOR& up);
 };
 
 // Global function to check if backend is initialized

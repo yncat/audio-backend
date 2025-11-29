@@ -305,4 +305,81 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
     return 0;
 }
 
+// Play a oneshot sound at the player's position (for player-emitted sounds)
+int vrOneshotPlayer(const char* sample_key, SoundAttributes* sound_attributes) {
+    // Check if VR is initialized
+    if (!g_context->isVrInitialized()) {
+        g_context->SetLastError("VR audio is not initialized. Call audio_vrInitialize() first.");
+        return -1;
+    }
+
+    // Validate inputs
+    if (sample_key == nullptr || sound_attributes == nullptr) {
+        g_context->SetLastError("Invalid parameters: sample_key and sound_attributes cannot be null");
+        return -1;
+    }
+
+    FMOD::System* system = g_context->GetFmodSystem();
+    if (system == nullptr) {
+        g_context->SetLastError("FMOD system is null");
+        return -1;
+    }
+
+    // Get the player_sounds channel group
+    FMOD::ChannelGroup* playerSoundsGroup = g_context->GetVrPlayerSoundsGroup();
+    if (playerSoundsGroup == nullptr) {
+        g_context->SetLastError("player_sounds channel group is not initialized");
+        return -1;
+    }
+
+    // Find the sample by key
+    auto& samples = g_context->GetSamplesMap();
+    auto it = samples.find(sample_key);
+    if (it == samples.end()) {
+        g_context->SetLastError(std::string("Sample not found: ") + sample_key);
+        return -1;
+    }
+    FMOD::Sound* sound = it->second;
+
+    // Create a channel for this sound (paused initially) in the player_sounds group
+    FMOD::Channel* channel = nullptr;
+    FMOD_RESULT result = system->playSound(sound, playerSoundsGroup, true, &channel);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to play sound: ") + FMOD_ErrorString(result));
+        return -1;
+    }
+
+    // Apply sound attributes
+    // Set volume
+    result = channel->setVolume(sound_attributes->volume);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set volume: ") + FMOD_ErrorString(result));
+        channel->stop();
+        return -1;
+    }
+
+    // Set pitch
+    result = channel->setPitch(sound_attributes->pitch);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set pitch: ") + FMOD_ErrorString(result));
+        channel->stop();
+        return -1;
+    }
+
+    // Note: pan is ignored for player sounds as per spec
+    // Note: The player_sounds group already has a Resonance Audio Source DSP attached,
+    // so individual channels don't need their own Source DSP.
+    // The position is managed by the group's DSP via setPlayerPosition().
+
+    // Unpause and play
+    result = channel->setPaused(false);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to unpause channel: ") + FMOD_ErrorString(result));
+        channel->stop();
+        return -1;
+    }
+
+    return 0;
+}
+
 } // extern "C"

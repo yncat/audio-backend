@@ -15,6 +15,9 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
 // Play a oneshot sound at an absolute world position
 int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes);
 
+// Play a oneshot sound at the player's position (for player-emitted sounds)
+int vrOneshotPlayer(const char* sample_key, SoundAttributes* sound_attributes);
+
 #ifdef __cplusplus
 }
 #endif

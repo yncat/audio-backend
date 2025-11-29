@@ -136,6 +136,94 @@ int vrInitialize(const char* plugin_path) {
         return -1;
     }
 
+    // Create player_sounds channel group
+    FMOD::ChannelGroup* playerSoundsGroup = nullptr;
+    result = system->createChannelGroup("player_sounds", &playerSoundsGroup);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to create player_sounds channel group: ") + FMOD_ErrorString(result));
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
+    // Attach the player_sounds group to master
+    result = masterGroup->addGroup(playerSoundsGroup);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to add player_sounds group to master: ") + FMOD_ErrorString(result));
+        playerSoundsGroup->release();
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
+    // Create a Resonance Audio Source DSP for the player_sounds group
+    // This allows player sounds to be positioned at the player's location
+    FMOD::DSP* playerSourceDsp = nullptr;
+    result = system->createDSPByPlugin(source_plugin_handle, &playerSourceDsp);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to create Resonance Audio Source DSP for player_sounds: ") + FMOD_ErrorString(result));
+        playerSoundsGroup->release();
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
+    // Attach resonance audio source DSP to player_sounds channel group
+    // This allows player sounds to be positioned and go through resonance audio
+    result = playerSoundsGroup->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, playerSourceDsp);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to add Source DSP to player_sounds group: ") + FMOD_ErrorString(result));
+        playerSourceDsp->release();
+        playerSoundsGroup->release();
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
+    // Set distance attenuation parameters for player source DSP
+    // Parameter [2]: Min Distance
+    result = playerSourceDsp->setParameterFloat(2, 0.5f);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set min distance for player source DSP: ") + FMOD_ErrorString(result));
+        playerSourceDsp->release();
+        playerSoundsGroup->release();
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
+    // Parameter [3]: Max Distance
+    result = playerSourceDsp->setParameterFloat(3, 200.0f);
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set max distance for player source DSP: ") + FMOD_ErrorString(result));
+        playerSourceDsp->release();
+        playerSoundsGroup->release();
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
+    g_context->SetVrPlayerSoundsGroup(playerSoundsGroup);
+    g_context->SetVrPlayerSourceDsp(playerSourceDsp);
+
     g_context->setVrInitialized(true);
 
     return 0;
