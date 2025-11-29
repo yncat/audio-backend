@@ -82,4 +82,11 @@ room2に切り替えて再生
 roomClearを実行
 もう一度clapを再生
 
+# revision 2
+ルームのサイズを指定するのを忘れていたので追加する。
+vrstructsにsize3dを追加
+vrRoomAddに size3d roomSize を追加
+storedRoomでもサイズを保持できるようにする
+変換層では、この値を demensions にマッピングする
+サンプルプログラムの中でも、ルームのサイズを定義する。
 

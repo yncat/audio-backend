@@ -38,6 +38,7 @@ private:
     FMOD_VECTOR vr_player_position;
     FMOD_VECTOR vr_player_forward;
     FMOD_VECTOR vr_player_up;
+    std::vector<StoredRoom> vr_rooms;
 
 public:
     AudioBackendContext();
@@ -89,6 +90,8 @@ public:
 
     FMOD_VECTOR& GetVrPlayerUp();
     void SetVrPlayerUp(const FMOD_VECTOR& up);
+
+    std::vector<StoredRoom>& GetVrRooms();
 };
 
 // Global function to check if backend is initialized

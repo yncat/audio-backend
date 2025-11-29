@@ -19,6 +19,14 @@ typedef struct {
     int height;  // Y in FMOD
 } Position3D;
 
+// 3D size structure for room dimensions
+// Maps to FMOD coordinate system: width->X, depth->Z, height->Y
+typedef struct {
+    float width;   // X in FMOD
+    float depth;   // Z in FMOD
+    float height;  // Y in FMOD
+} Size3D;
+
 // Unit vector structure for rotations
 // Maps to FMOD coordinate system: width->X, depth->Z, height->Y
 typedef struct {
@@ -56,6 +64,16 @@ __declspec(dllimport) int audio_bgmSetLoopPoint(int slot, int ms);
 __declspec(dllimport) int audio_bgmPlay(int slot);
 __declspec(dllimport) int audio_bgmFree(int slot);
 
+// Wall materials structure for room effect
+typedef struct {
+    const char* front;
+    const char* back;
+    const char* left;
+    const char* right;
+    const char* floor;
+    const char* ceiling;
+} WallMaterials;
+
 // VR Audio API
 __declspec(dllimport) int audio_vrInitialize(const char* plugin_path);
 __declspec(dllimport) int audio_vrOneshotRelative(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes, bool follow);
@@ -63,6 +81,9 @@ __declspec(dllimport) int audio_vrOneshotAbsolute(const char* sample_key, const 
 __declspec(dllimport) int audio_vrOneshotPlayer(const char* sample_key, SoundAttributes* sound_attributes);
 __declspec(dllimport) int audio_vrPlayerSetPosition(float width, float depth, float height);
 __declspec(dllimport) int audio_vrPlayerSetRotation(const UnitVector3D* front, const UnitVector3D* up);
+__declspec(dllimport) int audio_vrRoomAdd(Position3D centerPosition, Size3D roomSize, WallMaterials* materials);
+__declspec(dllimport) int audio_vrRoomChange(int index);
+__declspec(dllimport) int audio_vrRoomClear();
 
 // Plugin Inspector API
 __declspec(dllimport) int audio_corePluginInspect(const char* plugin_path, const char* output_path);

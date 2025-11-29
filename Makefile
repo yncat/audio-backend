@@ -23,11 +23,11 @@ DLL_TARGET = $(BIN_DIR)\audiobackend.dll
 EXAMPLES_TARGET = $(BIN_DIR)\audiobackend_examples.exe
 
 # Source files (automatically find all .cpp files)
-DLL_SOURCES = $(SRC_DIR)\main.cpp $(SRC_DIR)\version.cpp $(SRC_DIR)\context.cpp $(SRC_DIR)\core.cpp $(SRC_DIR)\bgm.cpp $(SRC_DIR)\working_thread.cpp $(SRC_DIR)\sample.cpp $(SRC_DIR)\vr.cpp $(SRC_DIR)\vrobj.cpp $(SRC_DIR)\vrplayer.cpp $(SRC_DIR)\plugin_inspector.cpp
+DLL_SOURCES = $(SRC_DIR)\main.cpp $(SRC_DIR)\version.cpp $(SRC_DIR)\context.cpp $(SRC_DIR)\core.cpp $(SRC_DIR)\bgm.cpp $(SRC_DIR)\working_thread.cpp $(SRC_DIR)\sample.cpp $(SRC_DIR)\vr.cpp $(SRC_DIR)\vrobj.cpp $(SRC_DIR)\vrplayer.cpp $(SRC_DIR)\vrroom.cpp $(SRC_DIR)\adapter_resonance.cpp $(SRC_DIR)\plugin_inspector.cpp
 EXAMPLES_SOURCES = $(EXAMPLES_DIR)\main.cpp
 
 # Object files
-DLL_OBJECTS = $(BIN_DIR)\main_dll.obj $(BIN_DIR)\version.obj $(BIN_DIR)\context.obj $(BIN_DIR)\core.obj $(BIN_DIR)\bgm.obj $(BIN_DIR)\working_thread.obj $(BIN_DIR)\sample.obj $(BIN_DIR)\vr.obj $(BIN_DIR)\vrobj.obj $(BIN_DIR)\vrplayer.obj $(BIN_DIR)\plugin_inspector.obj
+DLL_OBJECTS = $(BIN_DIR)\main_dll.obj $(BIN_DIR)\version.obj $(BIN_DIR)\context.obj $(BIN_DIR)\core.obj $(BIN_DIR)\bgm.obj $(BIN_DIR)\working_thread.obj $(BIN_DIR)\sample.obj $(BIN_DIR)\vr.obj $(BIN_DIR)\vrobj.obj $(BIN_DIR)\vrplayer.obj $(BIN_DIR)\vrroom.obj $(BIN_DIR)\adapter_resonance.obj $(BIN_DIR)\plugin_inspector.obj
 EXAMPLES_OBJECTS = $(BIN_DIR)\main_examples.obj
 
 # Default target - build both
@@ -83,6 +83,14 @@ $(BIN_DIR)\vrobj.obj: $(SRC_DIR)\vrobj.cpp $(SRC_DIR)\vrobj.h $(SRC_DIR)\vrstruc
 $(BIN_DIR)\vrplayer.obj: $(SRC_DIR)\vrplayer.cpp $(SRC_DIR)\vrplayer.h $(SRC_DIR)\vrstructs.h $(SRC_DIR)\context.h
 	@echo Compiling $(SRC_DIR)\vrplayer.cpp...
 	$(CC) $(DLL_CFLAGS) /c $(SRC_DIR)\vrplayer.cpp /Fo:$(BIN_DIR)\vrplayer.obj
+
+$(BIN_DIR)\vrroom.obj: $(SRC_DIR)\vrroom.cpp $(SRC_DIR)\vrroom.h $(SRC_DIR)\vrstructs.h $(SRC_DIR)\context.h $(SRC_DIR)\adapter_resonance.h
+	@echo Compiling $(SRC_DIR)\vrroom.cpp...
+	$(CC) $(DLL_CFLAGS) /c $(SRC_DIR)\vrroom.cpp /Fo:$(BIN_DIR)\vrroom.obj
+
+$(BIN_DIR)\adapter_resonance.obj: $(SRC_DIR)\adapter_resonance.cpp $(SRC_DIR)\adapter_resonance.h $(SRC_DIR)\vrstructs.h $(SRC_DIR)\resonance_room_properties.h
+	@echo Compiling $(SRC_DIR)\adapter_resonance.cpp...
+	$(CC) $(DLL_CFLAGS) /c $(SRC_DIR)\adapter_resonance.cpp /Fo:$(BIN_DIR)\adapter_resonance.obj
 
 $(BIN_DIR)\plugin_inspector.obj: $(SRC_DIR)\plugin_inspector.cpp $(SRC_DIR)\plugin_inspector.h $(SRC_DIR)\context.h
 	@echo Compiling $(SRC_DIR)\plugin_inspector.cpp...

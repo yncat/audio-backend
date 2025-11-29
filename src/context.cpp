@@ -148,3 +148,7 @@ FMOD_VECTOR& AudioBackendContext::GetVrPlayerUp() {
 void AudioBackendContext::SetVrPlayerUp(const FMOD_VECTOR& up) {
     vr_player_up = up;
 }
+
+std::vector<StoredRoom>& AudioBackendContext::GetVrRooms() {
+    return vr_rooms;
+}

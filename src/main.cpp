@@ -8,6 +8,7 @@
 #include "vr.h"
 #include "vrobj.h"
 #include "vrplayer.h"
+#include "vrroom.h"
 #include "plugin_inspector.h"
 
 // External declaration of global context
@@ -132,6 +133,18 @@ extern "C" {
 
     __declspec(dllexport) int audio_vrPlayerSetRotation(const UnitVector3D* front, const UnitVector3D* up) {
         return setPlayerRotation(front, up);
+    }
+
+    __declspec(dllexport) int audio_vrRoomAdd(Position3D centerPosition, Size3D roomSize, WallMaterials* materials) {
+        return vrRoomAdd(centerPosition, roomSize, materials);
+    }
+
+    __declspec(dllexport) int audio_vrRoomChange(int index) {
+        return vrRoomChange(index);
+    }
+
+    __declspec(dllexport) int audio_vrRoomClear() {
+        return vrRoomClear();
     }
 
     // Plugin Inspector API functions
