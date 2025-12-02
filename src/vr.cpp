@@ -80,35 +80,6 @@ int vrInitialize(const char* plugin_path) {
     }
     g_context->SetVrListenerDsp(listenerDsp);
 
-    // Debug: Print all DSPs attached to master channel group
-    int numDSPs = 0;
-    result = masterGroup->getNumDSPs(&numDSPs);
-    if (result == FMOD_OK) {
-        printf("=== Master Channel Group DSPs (Total: %d) ===\n", numDSPs);
-        for (int i = 0; i < numDSPs; i++) {
-            FMOD::DSP* dsp = nullptr;
-            result = masterGroup->getDSP(i, &dsp);
-            if (result == FMOD_OK && dsp != nullptr) {
-                char name[256] = {0};
-                unsigned int version = 0;
-                int channels = 0;
-                int configWidth = 0;
-                int configHeight = 0;
-                result = dsp->getInfo(name, &version, &channels, &configWidth, &configHeight);
-                if (result == FMOD_OK) {
-                    printf("  [%d] Name: %s, Version: %u, Channels: %d\n", i, name, version, channels);
-                } else {
-                    printf("  [%d] DSP (failed to get info: %s)\n", i, FMOD_ErrorString(result));
-                }
-            } else {
-                printf("  [%d] Failed to get DSP: %s\n", i, FMOD_ErrorString(result));
-            }
-        }
-        printf("=====================================\n");
-    } else {
-        printf("Failed to get number of DSPs: %s\n", FMOD_ErrorString(result));
-    }
-
     // Get the Resonance Audio Source plugin (nested plugin at index 2)
     unsigned int source_plugin_handle = 0;
     result = system->getNestedPlugin(plugin_handle, 2, &source_plugin_handle);

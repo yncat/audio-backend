@@ -43,7 +43,6 @@ int vrRoomAdd(Position3D centerPosition, Size3D roomSize, WallMaterials* materia
 
     std::vector<StoredRoom>& rooms = g_context->GetVrRooms();
     rooms.push_back(newRoom);
-    std::cout << "vector pushed back" << std::endl;
 
     // Return the index of the newly added room
     return static_cast<int>(rooms.size() - 1);
