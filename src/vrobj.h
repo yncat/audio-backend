@@ -38,16 +38,17 @@ int vrObjectPlayOneshot(const char* object_key, const char* sample_key, SoundAtt
 
 // C++ only structures
 #include "fmod/fmod.hpp"
+#include <string>
 
 // VRObject structure (internal C++ structure)
 struct VRObject {
     Position3D center;
     Size3D size;
-    FMOD::Sound* looped_sound;
+    std::string looped_sample_key;  // Key to the sample, empty if no loop
     FMOD::Channel* looped_channel;
     FMOD::ChannelGroup* channel_group;
 
-    VRObject() : looped_sound(nullptr), looped_channel(nullptr), channel_group(nullptr) {
+    VRObject() : looped_channel(nullptr), channel_group(nullptr) {
         center = {0.0f, 0.0f, 0.0f};
         size = {0.0f, 0.0f, 0.0f};
     }

@@ -502,9 +502,9 @@ int vrObjectAdd(const char* key, VRObjectInfo* info) {
         sourceDsp->release();
     }
 
-    // If looped_sample_key is specified, create the looped sound
+    // If looped_sample_key is specified, validate and store it
     if (info->looped_sample_key != nullptr && info->looped_sample_key[0] != '\0') {
-        // Find the sample by key
+        // Validate that the sample exists
         auto& samples = g_context->GetSamplesMap();
         auto it = samples.find(info->looped_sample_key);
         if (it == samples.end()) {
@@ -512,71 +512,9 @@ int vrObjectAdd(const char* key, VRObjectInfo* info) {
             vrobj.channel_group->release();
             return -1;
         }
-        FMOD::Sound* original_sound = it->second;
 
-        // Get sound information to create a looped version
-        FMOD_SOUND_TYPE sound_type;
-        FMOD_SOUND_FORMAT sound_format;
-        int channels = 0;
-        int bits = 0;
-        result = original_sound->getFormat(&sound_type, &sound_format, &channels, &bits);
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to get sound format: ") + FMOD_ErrorString(result));
-            vrobj.channel_group->release();
-            return -1;
-        }
-
-        // Get the sound's data
-        void* ptr1 = nullptr;
-        void* ptr2 = nullptr;
-        unsigned int len1 = 0;
-        unsigned int len2 = 0;
-        result = original_sound->lock(0, 0, &ptr1, &ptr2, &len1, &len2);
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to lock sound: ") + FMOD_ErrorString(result));
-            vrobj.channel_group->release();
-            return -1;
-        }
-
-        // Get sound length
-        unsigned int sound_length = 0;
-        result = original_sound->getLength(&sound_length, FMOD_TIMEUNIT_PCMBYTES);
-        if (result != FMOD_OK) {
-            original_sound->unlock(ptr1, ptr2, len1, len2);
-            g_context->SetLastError(std::string("Failed to get sound length: ") + FMOD_ErrorString(result));
-            vrobj.channel_group->release();
-            return -1;
-        }
-
-        // Get sample rate
-        float frequency = 0.0f;
-        result = original_sound->getDefaults(&frequency, nullptr);
-        if (result != FMOD_OK) {
-            original_sound->unlock(ptr1, ptr2, len1, len2);
-            g_context->SetLastError(std::string("Failed to get sound defaults: ") + FMOD_ErrorString(result));
-            vrobj.channel_group->release();
-            return -1;
-        }
-
-        // Create CREATESOUNDEXINFO with loop mode
-        FMOD_CREATESOUNDEXINFO exinfo = {};
-        exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-        exinfo.length = sound_length;
-        exinfo.numchannels = channels;
-        exinfo.defaultfrequency = (int)frequency;
-        exinfo.format = sound_format;
-
-        // Create a new sound from the data with LOOP_NORMAL mode
-        result = system->createSound((const char*)ptr1, FMOD_OPENMEMORY | FMOD_LOOP_NORMAL, &exinfo, &vrobj.looped_sound);
-
-        // Unlock the original sound
-        original_sound->unlock(ptr1, ptr2, len1, len2);
-
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to create looped sound: ") + FMOD_ErrorString(result));
-            vrobj.channel_group->release();
-            return -1;
-        }
+        // Store the sample key (no need to create a new sound)
+        vrobj.looped_sample_key = info->looped_sample_key;
     }
 
     // Store the VR object in the context
@@ -609,16 +547,10 @@ int vrObjectRemove(const char* key) {
 
     VRObject& vrobj = it->second;
 
-    // Stop and release the looped channel if it exists
+    // Stop the looped channel if it exists
     if (vrobj.looped_channel != nullptr) {
         vrobj.looped_channel->stop();
         vrobj.looped_channel = nullptr;
-    }
-
-    // Release the looped sound if it exists
-    if (vrobj.looped_sound != nullptr) {
-        vrobj.looped_sound->release();
-        vrobj.looped_sound = nullptr;
     }
 
     // Release the channel group
@@ -663,11 +595,20 @@ int vrObjectStartLooping(const char* key) {
 
     VRObject& vrobj = it->second;
 
-    // Check if there's a looped sound
-    if (vrobj.looped_sound == nullptr) {
+    // Check if there's a looped sample key
+    if (vrobj.looped_sample_key.empty()) {
         g_context->SetLastError(std::string("VR object has no looped sound: ") + key);
         return -1;
     }
+
+    // Get the sample by key
+    auto& samples = g_context->GetSamplesMap();
+    auto sample_it = samples.find(vrobj.looped_sample_key);
+    if (sample_it == samples.end()) {
+        g_context->SetLastError(std::string("Looped sample not found: ") + vrobj.looped_sample_key);
+        return -1;
+    }
+    FMOD::Sound* sound = sample_it->second;
 
     // If already playing, stop it first
     if (vrobj.looped_channel != nullptr) {
@@ -675,17 +616,19 @@ int vrObjectStartLooping(const char* key) {
         vrobj.looped_channel = nullptr;
     }
 
-    // Seek to the beginning
-    FMOD_RESULT result = vrobj.looped_sound->seekData(0);
+    // Play the sound in the object's channel group
+    FMOD_RESULT result = system->playSound(sound, vrobj.channel_group, false, &vrobj.looped_channel);
     if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to seek to beginning: ") + FMOD_ErrorString(result));
+        g_context->SetLastError(std::string("Failed to play looped sound: ") + FMOD_ErrorString(result));
         return -1;
     }
 
-    // Play the sound in the object's channel group
-    result = system->playSound(vrobj.looped_sound, vrobj.channel_group, false, &vrobj.looped_channel);
+    // Set loop mode on the channel
+    result = vrobj.looped_channel->setMode(FMOD_LOOP_NORMAL);
     if (result != FMOD_OK) {
-        g_context->SetLastError(std::string("Failed to play looped sound: ") + FMOD_ErrorString(result));
+        g_context->SetLastError(std::string("Failed to set loop mode: ") + FMOD_ErrorString(result));
+        vrobj.looped_channel->stop();
+        vrobj.looped_channel = nullptr;
         return -1;
     }
 
