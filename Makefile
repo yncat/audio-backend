@@ -24,11 +24,11 @@ EXAMPLES_TARGET = $(BIN_DIR)\audiobackend_examples.exe
 
 # Source files (automatically find all .cpp files)
 DLL_SOURCES = $(SRC_DIR)\main.cpp $(SRC_DIR)\version.cpp $(SRC_DIR)\context.cpp $(SRC_DIR)\core.cpp $(SRC_DIR)\bgm.cpp $(SRC_DIR)\working_thread.cpp $(SRC_DIR)\sample.cpp $(SRC_DIR)\vr.cpp $(SRC_DIR)\vrobj.cpp $(SRC_DIR)\vrplayer.cpp $(SRC_DIR)\vrroom.cpp $(SRC_DIR)\adapter_resonance.cpp $(SRC_DIR)\plugin_inspector.cpp
-EXAMPLES_SOURCES = $(EXAMPLES_DIR)\main.cpp $(EXAMPLES_DIR)\helper.cpp $(EXAMPLES_DIR)\test_core_init_free.cpp $(EXAMPLES_DIR)\test_bgm_functions.cpp $(EXAMPLES_DIR)\test_loop_point.cpp $(EXAMPLES_DIR)\test_sample_oneshot.cpp $(EXAMPLES_DIR)\test_vr_initialization.cpp $(EXAMPLES_DIR)\test_plugin_inspector.cpp $(EXAMPLES_DIR)\test_3d_oneshot.cpp $(EXAMPLES_DIR)\test_vr_player_position.cpp $(EXAMPLES_DIR)\test_vr_room_effects.cpp
+EXAMPLES_SOURCES = $(EXAMPLES_DIR)\main.cpp $(EXAMPLES_DIR)\helper.cpp $(EXAMPLES_DIR)\test_core_init_free.cpp $(EXAMPLES_DIR)\test_bgm_functions.cpp $(EXAMPLES_DIR)\test_loop_point.cpp $(EXAMPLES_DIR)\test_sample_oneshot.cpp $(EXAMPLES_DIR)\test_vr_initialization.cpp $(EXAMPLES_DIR)\test_plugin_inspector.cpp $(EXAMPLES_DIR)\test_3d_oneshot.cpp $(EXAMPLES_DIR)\test_vr_player_position.cpp $(EXAMPLES_DIR)\test_vr_room_effects.cpp $(EXAMPLES_DIR)\test_vr_object.cpp
 
 # Object files
 DLL_OBJECTS = $(BIN_DIR)\main_dll.obj $(BIN_DIR)\version.obj $(BIN_DIR)\context.obj $(BIN_DIR)\core.obj $(BIN_DIR)\bgm.obj $(BIN_DIR)\working_thread.obj $(BIN_DIR)\sample.obj $(BIN_DIR)\vr.obj $(BIN_DIR)\vrobj.obj $(BIN_DIR)\vrplayer.obj $(BIN_DIR)\vrroom.obj $(BIN_DIR)\adapter_resonance.obj $(BIN_DIR)\plugin_inspector.obj
-EXAMPLES_OBJECTS = $(BIN_DIR)\main_examples.obj $(BIN_DIR)\helper.obj $(BIN_DIR)\test_core_init_free.obj $(BIN_DIR)\test_bgm_functions.obj $(BIN_DIR)\test_loop_point.obj $(BIN_DIR)\test_sample_oneshot.obj $(BIN_DIR)\test_vr_initialization.obj $(BIN_DIR)\test_plugin_inspector.obj $(BIN_DIR)\test_3d_oneshot.obj $(BIN_DIR)\test_vr_player_position.obj $(BIN_DIR)\test_vr_room_effects.obj
+EXAMPLES_OBJECTS = $(BIN_DIR)\main_examples.obj $(BIN_DIR)\helper.obj $(BIN_DIR)\test_core_init_free.obj $(BIN_DIR)\test_bgm_functions.obj $(BIN_DIR)\test_loop_point.obj $(BIN_DIR)\test_sample_oneshot.obj $(BIN_DIR)\test_vr_initialization.obj $(BIN_DIR)\test_plugin_inspector.obj $(BIN_DIR)\test_3d_oneshot.obj $(BIN_DIR)\test_vr_player_position.obj $(BIN_DIR)\test_vr_room_effects.obj $(BIN_DIR)\test_vr_object.obj
 
 # Default target - build both
 all: $(DLL_TARGET) $(EXAMPLES_TARGET)
@@ -146,6 +146,10 @@ $(BIN_DIR)\test_vr_player_position.obj: $(EXAMPLES_DIR)\test_vr_player_position.
 $(BIN_DIR)\test_vr_room_effects.obj: $(EXAMPLES_DIR)\test_vr_room_effects.cpp $(EXAMPLES_DIR)\helper.h
 	@echo Compiling $(EXAMPLES_DIR)\test_vr_room_effects.cpp...
 	$(CC) $(CFLAGS) /c $(EXAMPLES_DIR)\test_vr_room_effects.cpp /Fo:$(BIN_DIR)\test_vr_room_effects.obj
+
+$(BIN_DIR)\test_vr_object.obj: $(EXAMPLES_DIR)\test_vr_object.cpp $(EXAMPLES_DIR)\helper.h
+	@echo Compiling $(EXAMPLES_DIR)\test_vr_object.cpp...
+	$(CC) $(CFLAGS) /c $(EXAMPLES_DIR)\test_vr_object.cpp /Fo:$(BIN_DIR)\test_vr_object.obj
 
 # Clean build artifacts
 clean:

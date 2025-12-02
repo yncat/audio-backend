@@ -74,6 +74,13 @@ typedef struct {
     const char* ceiling;
 } WallMaterials;
 
+// VRObjectInfo structure for passing VR object information
+typedef struct {
+    Position3D position;
+    Size3D size;
+    const char* looped_sample_key;  // Can be NULL if no looped sound
+} VRObjectInfo;
+
 // VR Audio API
 __declspec(dllimport) int audio_vrInitialize(const char* plugin_path);
 __declspec(dllimport) int audio_vrOneshotRelative(const char* sample_key, const Position3D* position3d, SoundAttributes* sound_attributes, bool follow);
@@ -84,6 +91,14 @@ __declspec(dllimport) int audio_vrPlayerSetRotation(const UnitVector3D* front, c
 __declspec(dllimport) int audio_vrRoomAdd(Position3D centerPosition, Size3D roomSize, WallMaterials* materials);
 __declspec(dllimport) int audio_vrRoomChange(int index);
 __declspec(dllimport) int audio_vrRoomClear();
+
+// VR Object API
+__declspec(dllimport) int audio_vrObjectAdd(const char* key, VRObjectInfo* info);
+__declspec(dllimport) int audio_vrObjectRemove(const char* key);
+__declspec(dllimport) int audio_vrObjectStartLooping(const char* key);
+__declspec(dllimport) int audio_vrObjectPauseLooping(const char* key);
+__declspec(dllimport) int audio_vrObjectResumeLooping(const char* key);
+__declspec(dllimport) int audio_vrObjectPlayOneshot(const char* object_key, const char* sample_key, SoundAttributes* attributes);
 
 // Plugin Inspector API
 __declspec(dllimport) int audio_corePluginInspect(const char* plugin_path, const char* output_path);

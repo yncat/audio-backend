@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "fmod/fmod.hpp"
 #include "vrstructs.h"
+#include "vrobj.h"
 
 // Structure to hold BGM slot data
 struct BgmSlot {
@@ -39,6 +40,7 @@ private:
     FMOD_VECTOR vr_player_forward;
     FMOD_VECTOR vr_player_up;
     std::vector<StoredRoom> vr_rooms;
+    std::unordered_map<std::string, VRObject> vr_objects;
 
 public:
     AudioBackendContext();
@@ -92,6 +94,8 @@ public:
     void SetVrPlayerUp(const FMOD_VECTOR& up);
 
     std::vector<StoredRoom>& GetVrRooms();
+
+    std::unordered_map<std::string, VRObject>& GetVrObjects();
 };
 
 // Global function to check if backend is initialized

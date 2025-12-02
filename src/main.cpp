@@ -147,6 +147,31 @@ extern "C" {
         return vrRoomClear();
     }
 
+    // VR Object API functions
+    __declspec(dllexport) int audio_vrObjectAdd(const char* key, VRObjectInfo* info) {
+        return vrObjectAdd(key, info);
+    }
+
+    __declspec(dllexport) int audio_vrObjectRemove(const char* key) {
+        return vrObjectRemove(key);
+    }
+
+    __declspec(dllexport) int audio_vrObjectStartLooping(const char* key) {
+        return vrObjectStartLooping(key);
+    }
+
+    __declspec(dllexport) int audio_vrObjectPauseLooping(const char* key) {
+        return vrObjectPauseLooping(key);
+    }
+
+    __declspec(dllexport) int audio_vrObjectResumeLooping(const char* key) {
+        return vrObjectResumeLooping(key);
+    }
+
+    __declspec(dllexport) int audio_vrObjectPlayOneshot(const char* object_key, const char* sample_key, SoundAttributes* attributes) {
+        return vrObjectPlayOneshot(object_key, sample_key, attributes);
+    }
+
     // Plugin Inspector API functions
     __declspec(dllexport) int audio_corePluginInspect(const char* plugin_path, const char* output_path) {
         return corePluginInspect(plugin_path, output_path);

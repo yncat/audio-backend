@@ -12,6 +12,7 @@ void testPluginInspector();
 void test3DOneshotSound();
 void testVrPlayerPositionAndSound();
 void testVrRoomEffects();
+void testVrObject();
 
 void displayMenu() {
     std::cout << "\n================================\n";
@@ -26,6 +27,7 @@ void displayMenu() {
     std::cout << "7: Test 3D Oneshot\n";
     std::cout << "8: Test VR Player Position & Sound\n";
     std::cout << "9: Test VR Room Effects\n";
+    std::cout << "10: Test VR Object\n";
     std::cout << "0: Quit\n";
     std::cout << "================================\n";
     std::cout << "Select an option: ";
@@ -92,6 +94,10 @@ int main() {
 
             case 9:
                 testVrRoomEffects();
+                break;
+
+            case 10:
+                testVrObject();
                 break;
 
             default:

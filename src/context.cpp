@@ -152,3 +152,7 @@ void AudioBackendContext::SetVrPlayerUp(const FMOD_VECTOR& up) {
 std::vector<StoredRoom>& AudioBackendContext::GetVrRooms() {
     return vr_rooms;
 }
+
+std::unordered_map<std::string, VRObject>& AudioBackendContext::GetVrObjects() {
+    return vr_objects;
+}
