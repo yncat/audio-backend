@@ -165,18 +165,25 @@ void testVrObject() {
     // Move missile object 10 times, decreasing x coordinate
     std::cout << "6. Moving missile object (x coordinate decreasing from 5 to -5)...\n";
     for (int i = 0; i < 10; i++) {
-        waitSeconds(0);  // 150ms wait - using 0 as waitSeconds takes integers
-        std::cout << "   Missile moved (frame " << (i+1) << "/10)\n";
-        // Note: Currently we don't have a vrObjectSetPosition function
-        // In a full implementation, we would update position here
-        // For now, we just wait to simulate the movement time
-        if (i < 9) {
-            // Wait 150ms between moves (except last one)
-            for (int j = 0; j < 150; j += 50) {
-                // Crude 150ms wait using multiple 50ms sleeps
-                waitSeconds(0);
-            }
+        // Calculate new position - x decreases from 5 to -5 over 10 steps
+        float newX = 5.0f - (i * 1.0f);
+        Position3D newPos = {newX, 0.0f, 3.0f};
+
+        // Update missile position
+        result = audio_vrObjectChangePosition("missile", newPos);
+        if (result != 0) {
+            std::cout << "FAILURE: Failed to change missile position\n";
+            char errorBuffer[512];
+            audio_errorGetLast(errorBuffer, sizeof(errorBuffer));
+            std::cout << "Error: " << errorBuffer << "\n";
+            audio_coreFree();
+            return;
         }
+
+        std::cout << "   Missile moved to x=" << newX << " (frame " << (i+1) << "/10)\n";
+
+        // Wait 150ms between moves
+        waitMilliseconds(150);
     }
 
     // Play explosion at position (-5, 3, 0) using absolute positioning

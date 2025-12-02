@@ -71,3 +71,8 @@ gun オブジェクトに対して oneshot再生を呼び出す。 gunoff.ogg �
 直後に gun のオブジェクトに対して pauseLooping を呼び出してループ音を止める。
 ２秒待つ
 gun オブジェクトをremoveして終了する
+
+# revision 2
+オブジェクトの位置情報を設定する vrObjectChangePosition(const char *key, position3d pos) を追加
+サンプルプログラムの修正:
+今、 150ms が使えないからといって、 waitSecond が 0 に設定されている。これはだめです。 waitMilliseconds も作って、150msしっかり待つようにする。そのうえで、ミサイルが移動するところで、オブジェクトの位置情報をちゃんと設定するように変更。

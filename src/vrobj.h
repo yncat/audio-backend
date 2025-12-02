@@ -32,6 +32,7 @@ int vrObjectStartLooping(const char* key);
 int vrObjectPauseLooping(const char* key);
 int vrObjectResumeLooping(const char* key);
 int vrObjectPlayOneshot(const char* object_key, const char* sample_key, SoundAttributes* attributes);
+int vrObjectChangePosition(const char* key, Position3D pos);
 
 #ifdef __cplusplus
 }

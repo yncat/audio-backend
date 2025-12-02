@@ -11,6 +11,11 @@ void waitSeconds(int seconds) {
     std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
 
+// Wait for specified milliseconds
+void waitMilliseconds(int milliseconds) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+}
+
 // Load a file into memory
 std::vector<char> loadFile(const std::string& path) {
     std::ifstream file(path, std::ios::binary | std::ios::ate);

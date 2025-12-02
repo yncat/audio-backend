@@ -172,6 +172,10 @@ extern "C" {
         return vrObjectPlayOneshot(object_key, sample_key, attributes);
     }
 
+    __declspec(dllexport) int audio_vrObjectChangePosition(const char* key, Position3D pos) {
+        return vrObjectChangePosition(key, pos);
+    }
+
     // Plugin Inspector API functions
     __declspec(dllexport) int audio_corePluginInspect(const char* plugin_path, const char* output_path) {
         return corePluginInspect(plugin_path, output_path);

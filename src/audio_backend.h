@@ -99,6 +99,7 @@ __declspec(dllimport) int audio_vrObjectStartLooping(const char* key);
 __declspec(dllimport) int audio_vrObjectPauseLooping(const char* key);
 __declspec(dllimport) int audio_vrObjectResumeLooping(const char* key);
 __declspec(dllimport) int audio_vrObjectPlayOneshot(const char* object_key, const char* sample_key, SoundAttributes* attributes);
+__declspec(dllimport) int audio_vrObjectChangePosition(const char* key, Position3D pos);
 
 // Plugin Inspector API
 __declspec(dllimport) int audio_corePluginInspect(const char* plugin_path, const char* output_path);

@@ -7,6 +7,9 @@
 // Wait for specified seconds
 void waitSeconds(int seconds);
 
+// Wait for specified milliseconds
+void waitMilliseconds(int milliseconds);
+
 // Load a file into memory
 std::vector<char> loadFile(const std::string& path);
 

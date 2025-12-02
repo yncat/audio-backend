@@ -788,4 +788,74 @@ int vrObjectPlayOneshot(const char* object_key, const char* sample_key, SoundAtt
     return 0;
 }
 
+// Change the position of a VR object
+int vrObjectChangePosition(const char* key, Position3D pos) {
+    // Check if VR is initialized
+    if (!g_context->isVrInitialized()) {
+        g_context->SetLastError("VR audio is not initialized. Call audio_vrInitialize() first.");
+        return -1;
+    }
+
+    // Validate input
+    if (key == nullptr) {
+        g_context->SetLastError("Invalid parameter: key cannot be null");
+        return -1;
+    }
+
+    FMOD::System* system = g_context->GetFmodSystem();
+    if (system == nullptr) {
+        g_context->SetLastError("FMOD system is null");
+        return -1;
+    }
+
+    // Find the VR object
+    auto& vr_objects = g_context->GetVrObjects();
+    auto it = vr_objects.find(key);
+    if (it == vr_objects.end()) {
+        g_context->SetLastError(std::string("VR object not found: ") + key);
+        return -1;
+    }
+
+    VRObject& vrobj = it->second;
+
+    // Update the stored position
+    vrobj.center = pos;
+
+    // Update the 3D position on the channel group's Resonance Audio Source DSP
+    if (vrobj.channel_group != nullptr) {
+        // Get the first DSP (which should be the Resonance Audio Source)
+        FMOD::DSP* sourceDsp = nullptr;
+        FMOD_RESULT result = vrobj.channel_group->getDSP(FMOD_CHANNELCONTROL_DSP_HEAD, &sourceDsp);
+        if (result != FMOD_OK || sourceDsp == nullptr) {
+            g_context->SetLastError(std::string("Failed to get Source DSP from channel group: ") + FMOD_ErrorString(result));
+            return -1;
+        }
+
+        // Set 3D position for the channel group's DSP
+        FMOD_VECTOR fmod_pos;
+        fmod_pos.x = pos.width;
+        fmod_pos.y = pos.height;
+        fmod_pos.z = pos.depth;
+
+        FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+        FMOD_DSP_PARAMETER_3DATTRIBUTES dsp_3d_attrs = {};
+        dsp_3d_attrs.relative.position = fmod_pos;
+        dsp_3d_attrs.relative.velocity = vel;
+        dsp_3d_attrs.relative.forward = { 0.0f, 0.0f, 1.0f };
+        dsp_3d_attrs.relative.up = { 0.0f, 1.0f, 0.0f };
+        dsp_3d_attrs.absolute.position = fmod_pos;
+        dsp_3d_attrs.absolute.velocity = vel;
+        dsp_3d_attrs.absolute.forward = { 0.0f, 0.0f, 1.0f };
+        dsp_3d_attrs.absolute.up = { 0.0f, 1.0f, 0.0f };
+
+        result = sourceDsp->setParameterData(8, &dsp_3d_attrs, sizeof(dsp_3d_attrs));
+        if (result != FMOD_OK) {
+            g_context->SetLastError(std::string("Failed to set 3D attributes on Source DSP: ") + FMOD_ErrorString(result));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 } // extern "C"
