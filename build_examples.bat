@@ -10,6 +10,16 @@ if not exist "bin" mkdir bin
 REM Compile and link the executable
 cl /EHsc /O2 /W4 ^
    examples\main.cpp ^
+   examples\helper.cpp ^
+   examples\test_core_init_free.cpp ^
+   examples\test_bgm_functions.cpp ^
+   examples\test_loop_point.cpp ^
+   examples\test_sample_oneshot.cpp ^
+   examples\test_vr_initialization.cpp ^
+   examples\test_plugin_inspector.cpp ^
+   examples\test_3d_oneshot.cpp ^
+   examples\test_vr_player_position.cpp ^
+   examples\test_vr_room_effects.cpp ^
    /Fe:bin\audiobackend_examples.exe ^
    /Fo:bin\ ^
    /link /MACHINE:X64
