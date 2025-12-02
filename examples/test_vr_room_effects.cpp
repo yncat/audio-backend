@@ -45,7 +45,7 @@ void testVrRoomEffects() {
 
     // Define Room 1: Small concrete room (5m x 5m x 3m)
     std::cout << "=== Creating Room 1: Small concrete room (5m x 5m x 3m) ===\n";
-    Position3D room1Pos = {0, 0, 0};
+    Position3D room1Pos = {0.0f, 0.0f, 0.0f};
     Size3D room1Size = {5.0f, 5.0f, 3.0f};  // width, depth, height
     WallMaterials room1Materials = {
         "concrete_block_coarse",  // front
@@ -68,7 +68,7 @@ void testVrRoomEffects() {
 
     // Define Room 2: Large carpeted room with curtains (10m x 8m x 4m)
     std::cout << "\n=== Creating Room 2: Large carpeted room with curtains (10m x 8m x 4m) ===\n";
-    Position3D room2Pos = {0, 0, 0};
+    Position3D room2Pos = {0.0f, 0.0f, 0.0f};
     Size3D room2Size = {5.0f, 8.0f, 4.0f};  // width, depth, height
     WallMaterials room2Materials = {
         "curtain_heavy",           // front
@@ -92,7 +92,7 @@ void testVrRoomEffects() {
     // Test 1: Play without room effect
     std::cout << "\n=== Test 1: Playing clap without room effect ===\n";
     SoundAttributes attr = {0.0f, 1.0f, 1.0f};
-    Position3D soundPos = {0, 3, 0};  // In front of listener
+    Position3D soundPos = {0.0f, 3.0f, 0.0f};  // In front of listener
     result = audio_vrOneshotRelative("clap", &soundPos, &attr, false);
     if (result != 0) {
         char errorBuffer[512];

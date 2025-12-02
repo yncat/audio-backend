@@ -14,9 +14,9 @@ typedef struct {
 // 3D position structure
 // Maps to FMOD coordinate system: width->X, depth->Z, height->Y
 typedef struct {
-    int width;   // X in FMOD
-    int depth;   // Z in FMOD
-    int height;  // Y in FMOD
+    float width;   // X in FMOD
+    float depth;   // Z in FMOD
+    float height;  // Y in FMOD
 } Position3D;
 
 // 3D size structure for room dimensions

@@ -82,9 +82,9 @@ vraudio::RoomProperties convertToResonanceRoomProperties(const StoredRoom& room)
     // Convert from Position3D (width, depth, height) to RoomProperties position (x, y, z)
     // Our coordinate system: width->X, depth->Z, height->Y
     // Resonance coordinate system: position[0]=x, position[1]=y, position[2]=z
-    props.position[0] = static_cast<float>(room.centerPosition.width);
-    props.position[1] = static_cast<float>(room.centerPosition.height);
-    props.position[2] = static_cast<float>(room.centerPosition.depth);
+    props.position[0] = room.centerPosition.width;
+    props.position[1] = room.centerPosition.height;
+    props.position[2] = room.centerPosition.depth;
 
     // Set rotation to no rotation (identity quaternion: w=1, x=0, y=0, z=0)
     props.rotation[0] = 0.0f;  // x

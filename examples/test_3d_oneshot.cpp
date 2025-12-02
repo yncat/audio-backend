@@ -50,14 +50,14 @@ void test3DOneshotSound() {
     };
 
     TestPosition positions[] = {
-        {"Front (0, 0, 3)", {0, 3, 0}},
-        {"Right-Front (2, 0, 2)", {2, 2, 0}},
-        {"Right (3, 0, 0)", {3, 0, 0}},
-        {"Right-Back (2, 0, -2)", {2, -2, 0}},
-        {"Back (0, 0, -3)", {0, -3, 0}},
-        {"Left-Back (-2, 0, -2)", {-2, -2, 0}},
-        {"Left (-3, 0, 0)", {-3, 0, 0}},
-        {"Left-Front (-2, 0, 2)", {-2, 2, 0}}
+        {"Front (0, 0, 3)", {0.0f, 3.0f, 0.0f}},
+        {"Right-Front (2, 0, 2)", {2.0f, 2.0f, 0.0f}},
+        {"Right (3, 0, 0)", {3.0f, 0.0f, 0.0f}},
+        {"Right-Back (2, 0, -2)", {2.0f, -2.0f, 0.0f}},
+        {"Back (0, 0, -3)", {0.0f, -3.0f, 0.0f}},
+        {"Left-Back (-2, 0, -2)", {-2.0f, -2.0f, 0.0f}},
+        {"Left (-3, 0, 0)", {-3.0f, 0.0f, 0.0f}},
+        {"Left-Front (-2, 0, 2)", {-2.0f, 2.0f, 0.0f}}
     };
 
     // Test 1: Play sounds around the listener with normal settings

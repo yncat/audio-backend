@@ -59,15 +59,15 @@ int vrOneshotRelative(const char* sample_key, const Position3D* position3d, Soun
     FMOD_VECTOR fmod_pos;
     if (follow) {
         // For head-relative sounds, use the position as-is (relative to listener)
-        fmod_pos.x = static_cast<float>(position3d->width);
-        fmod_pos.y = static_cast<float>(position3d->height);
-        fmod_pos.z = static_cast<float>(position3d->depth);
+        fmod_pos.x = position3d->width;
+        fmod_pos.y = position3d->height;
+        fmod_pos.z = position3d->depth;
     } else {
         // For world-relative sounds, add listener position to relative position
         ListenerAttributes& listener = g_context->GetVrListenerAttributes();
-        fmod_pos.x = listener.pos.x + static_cast<float>(position3d->width);
-        fmod_pos.y = listener.pos.y + static_cast<float>(position3d->height);
-        fmod_pos.z = listener.pos.z + static_cast<float>(position3d->depth);
+        fmod_pos.x = listener.pos.x + position3d->width;
+        fmod_pos.y = listener.pos.y + position3d->height;
+        fmod_pos.z = listener.pos.z + position3d->depth;
     }
 
     // Apply sound attributes
@@ -209,9 +209,9 @@ int vrOneshotAbsolute(const char* sample_key, const Position3D* position3d, Soun
 
     // Set absolute world position for DSP
     FMOD_VECTOR fmod_pos;
-    fmod_pos.x = static_cast<float>(position3d->width);
-    fmod_pos.y = static_cast<float>(position3d->height);
-    fmod_pos.z = static_cast<float>(position3d->depth);
+    fmod_pos.x = position3d->width;
+    fmod_pos.y = position3d->height;
+    fmod_pos.z = position3d->depth;
 
     // Apply sound attributes
     // Set volume
