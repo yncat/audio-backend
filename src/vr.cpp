@@ -192,6 +192,34 @@ int vrInitialize(const char* plugin_path) {
         return -1;
     }
 
+    // Set the player source DSP to use relative positioning
+    // The player sounds should always be positioned relative to the listener (player)
+    // at position (0, 0, 0.5) which is directly in front of the player
+    FMOD_DSP_PARAMETER_3DATTRIBUTES playerDsp3dAttrs = {};
+    FMOD_VECTOR relativePos = { 0.0f, 0.0f, 0.5f };
+    FMOD_VECTOR relativeVel = { 0.0f, 0.0f, 0.0f };
+    FMOD_VECTOR relativeForward = { 0.0f, 0.0f, 1.0f };
+    FMOD_VECTOR relativeUp = { 0.0f, 1.0f, 0.0f };
+
+    playerDsp3dAttrs.relative.position = relativePos;
+    playerDsp3dAttrs.relative.velocity = relativeVel;
+    playerDsp3dAttrs.relative.forward = relativeForward;
+    playerDsp3dAttrs.relative.up = relativeUp;
+
+    // Set 3D attributes on the Resonance Audio Source DSP (parameter index 8)
+    result = playerSourceDsp->setParameterData(8, &playerDsp3dAttrs, sizeof(playerDsp3dAttrs));
+    if (result != FMOD_OK) {
+        g_context->SetLastError(std::string("Failed to set relative 3D attributes on player Source DSP: ") + FMOD_ErrorString(result));
+        playerSourceDsp->release();
+        playerSoundsGroup->release();
+        listenerDsp->release();
+        system->unloadPlugin(plugin_handle);
+        g_context->SetVrListenerDsp(nullptr);
+        g_context->SetVrPluginHandle(0);
+        g_context->SetVrSourcePluginHandle(0);
+        return -1;
+    }
+
     g_context->SetVrPlayerSoundsGroup(playerSoundsGroup);
     g_context->SetVrPlayerSourceDsp(playerSourceDsp);
 

@@ -33,3 +33,8 @@ src/vrobj.cpp
 vrOneshotPlayer 関数を追加
 sample_key と sound_attributes を受け取る
 player_sounds のチャンネルグループの子供としてサウンドを生成し、再生する。親にresonanceがアタッチされているので、soundAttributesを適用して再生すればよい。soundAttributesのpanは無視する。
+
+# revision 2
+プレイヤーのチャンネルグループを、プレイヤーの移動に合わせて動かすようにしていた。
+が、ひょっとして、位置情報の 3d attributes に relative というフィールドがあるので、そっちにつねに 0, 0, 0.5 (プレイヤーの正面)を入れておけばいいかもしれないと気づいた。
+今、channelGroupの位置情報を absolute に入れているが、これを relative に一度だけ入れるように変更。プレイヤーの位置が更新されたときに、channelGroupの位置情報更新するコードを削除。

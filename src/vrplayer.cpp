@@ -51,27 +51,6 @@ int setPlayerPosition(float width, float depth, float height) {
     listener.forward = forward;
     listener.up = up;
 
-    // Get the Resonance Audio Source DSP attached to player_sounds group
-    FMOD::DSP* playerSourceDsp = g_context->GetVrPlayerSourceDsp();
-    if (playerSourceDsp != nullptr) {
-        // Set 3D attributes on the Resonance Audio Source DSP (parameter index 8)
-        FMOD_DSP_PARAMETER_3DATTRIBUTES dsp_3d_attrs = {};
-        dsp_3d_attrs.relative.position = position;
-        dsp_3d_attrs.relative.velocity = vel;
-        dsp_3d_attrs.relative.forward = forward;
-        dsp_3d_attrs.relative.up = up;
-        dsp_3d_attrs.absolute.position = position;
-        dsp_3d_attrs.absolute.velocity = vel;
-        dsp_3d_attrs.absolute.forward = forward;
-        dsp_3d_attrs.absolute.up = up;
-
-        result = playerSourceDsp->setParameterData(8, &dsp_3d_attrs, sizeof(dsp_3d_attrs));
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to set 3D attributes on player Source DSP: ") + FMOD_ErrorString(result));
-            return -1;
-        }
-    }
-
     return 0;
 }
 
@@ -127,27 +106,6 @@ int setPlayerRotation(const UnitVector3D* front, const UnitVector3D* up) {
     listener.vel = vel;
     listener.forward = forward;
     listener.up = upVector;
-
-    // Get the Resonance Audio Source DSP attached to player_sounds group
-    FMOD::DSP* playerSourceDsp = g_context->GetVrPlayerSourceDsp();
-    if (playerSourceDsp != nullptr) {
-        // Set 3D attributes on the Resonance Audio Source DSP (parameter index 8)
-        FMOD_DSP_PARAMETER_3DATTRIBUTES dsp_3d_attrs = {};
-        dsp_3d_attrs.relative.position = position;
-        dsp_3d_attrs.relative.velocity = vel;
-        dsp_3d_attrs.relative.forward = forward;
-        dsp_3d_attrs.relative.up = upVector;
-        dsp_3d_attrs.absolute.position = position;
-        dsp_3d_attrs.absolute.velocity = vel;
-        dsp_3d_attrs.absolute.forward = forward;
-        dsp_3d_attrs.absolute.up = upVector;
-
-        result = playerSourceDsp->setParameterData(8, &dsp_3d_attrs, sizeof(dsp_3d_attrs));
-        if (result != FMOD_OK) {
-            g_context->SetLastError(std::string("Failed to set 3D attributes on player Source DSP: ") + FMOD_ErrorString(result));
-            return -1;
-        }
-    }
 
     return 0;
 }
