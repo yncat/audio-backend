@@ -1,5 +1,6 @@
 #include "context.h"
 #include "vrstructs.h"
+#include "vrpositioning.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
 #include "fmod/fmod_dsp.h"
@@ -50,6 +51,43 @@ int setPlayerPosition(float width, float depth, float height) {
     listener.vel = vel;
     listener.forward = forward;
     listener.up = up;
+
+    // Update all VR objects' sound positions based on new player position
+    Position3D playerPos;
+    playerPos.width = width;
+    playerPos.height = height;
+    playerPos.depth = depth;
+
+    auto& vr_objects = g_context->GetVrObjects();
+    for (auto& pair : vr_objects) {
+        VRObject& vrobj = pair.second;
+        updateObjectSoundPosition(&vrobj, &playerPos);
+
+        // Update the 3D position on the object's channel group DSP
+        if (vrobj.channel_group != nullptr) {
+            FMOD::DSP* sourceDsp = nullptr;
+            FMOD_RESULT dsp_result = vrobj.channel_group->getDSP(FMOD_CHANNELCONTROL_DSP_HEAD, &sourceDsp);
+            if (dsp_result == FMOD_OK && sourceDsp != nullptr) {
+                FMOD_VECTOR fmod_pos;
+                fmod_pos.x = vrobj.sound_position.width;
+                fmod_pos.y = vrobj.sound_position.height;
+                fmod_pos.z = vrobj.sound_position.depth;
+
+                FMOD_VECTOR dsp_vel = { 0.0f, 0.0f, 0.0f };
+                FMOD_DSP_PARAMETER_3DATTRIBUTES dsp_3d_attrs = {};
+                dsp_3d_attrs.relative.position = fmod_pos;
+                dsp_3d_attrs.relative.velocity = dsp_vel;
+                dsp_3d_attrs.relative.forward = { 0.0f, 0.0f, 1.0f };
+                dsp_3d_attrs.relative.up = { 0.0f, 1.0f, 0.0f };
+                dsp_3d_attrs.absolute.position = fmod_pos;
+                dsp_3d_attrs.absolute.velocity = dsp_vel;
+                dsp_3d_attrs.absolute.forward = { 0.0f, 0.0f, 1.0f };
+                dsp_3d_attrs.absolute.up = { 0.0f, 1.0f, 0.0f };
+
+                sourceDsp->setParameterData(8, &dsp_3d_attrs, sizeof(dsp_3d_attrs));
+            }
+        }
+    }
 
     return 0;
 }

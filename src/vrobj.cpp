@@ -422,6 +422,12 @@ int vrObjectAdd(const char* key, VRObjectInfo* info) {
     vrobj.center = info->position;
     vrobj.size = info->size;
 
+    // Set is_wide flag if any size element is greater than 0
+    vrobj.is_wide = (info->size.width > 0.0f || info->size.height > 0.0f || info->size.depth > 0.0f);
+
+    // Initialize sound_position to center
+    vrobj.sound_position = info->position;
+
     // Create a channel group for this object
     result = system->createChannelGroup(key, &vrobj.channel_group);
     if (result != FMOD_OK) {

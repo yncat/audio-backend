@@ -48,10 +48,13 @@ struct VRObject {
     std::string looped_sample_key;  // Key to the sample, empty if no loop
     FMOD::Channel* looped_channel;
     FMOD::ChannelGroup* channel_group;
+    bool is_wide;  // True if size has any element > 0
+    Position3D sound_position;  // Actual position for sound playback
 
-    VRObject() : looped_channel(nullptr), channel_group(nullptr) {
+    VRObject() : looped_channel(nullptr), channel_group(nullptr), is_wide(false) {
         center = {0.0f, 0.0f, 0.0f};
         size = {0.0f, 0.0f, 0.0f};
+        sound_position = {0.0f, 0.0f, 0.0f};
     }
 };
 
