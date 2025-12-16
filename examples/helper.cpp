@@ -60,3 +60,9 @@ void clearInput() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
+
+// Wait for user to press enter
+void waitForEnter() {
+    std::cout << "Press Enter to continue...";
+    std::cin.get();
+}

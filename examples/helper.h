@@ -22,4 +22,7 @@ void freeAudioBackend();
 // Clear input buffer
 void clearInput();
 
+// Wait for user to press enter
+void waitForEnter();
+
 #endif // HELPER_H

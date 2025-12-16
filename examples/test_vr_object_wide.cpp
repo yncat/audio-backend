@@ -90,8 +90,7 @@ void testVrObjectWide() {
         return;
     }
     std::cout << "SUCCESS: Listener at (-1, 0, 0)\n";
-    std::cout << "   Waiting 3 seconds...\n";
-    waitSeconds(3);
+    waitForEnter();
 
     // Position 2: Listener at (0, 0, 0) - adjacent to left corner, should sound centered
     std::cout << "\n4. Setting listener position to (0, 0, 0)...\n";
@@ -106,8 +105,7 @@ void testVrObjectWide() {
         return;
     }
     std::cout << "SUCCESS: Listener at (0, 0, 0)\n";
-    std::cout << "   Waiting 3 seconds...\n";
-    waitSeconds(3);
+    waitForEnter();
 
     // Position 3: Listener at (3, 0, 0) - inside object, should still sound centered
     std::cout << "\n5. Setting listener position to (3, 0, 0)...\n";
@@ -122,8 +120,7 @@ void testVrObjectWide() {
         return;
     }
     std::cout << "SUCCESS: Listener at (3, 0, 0)\n";
-    std::cout << "   Waiting 3 seconds...\n";
-    waitSeconds(3);
+    waitForEnter();
 
     // Position 4: Listener at (7, 0, 0) - should hear object slightly from the left
     std::cout << "\n6. Setting listener position to (7, 0, 0)...\n";
@@ -138,8 +135,7 @@ void testVrObjectWide() {
         return;
     }
     std::cout << "SUCCESS: Listener at (7, 0, 0)\n";
-    std::cout << "   Waiting 3 seconds...\n";
-    waitSeconds(3);
+    waitForEnter();
 
     // Remove object and finish
     std::cout << "\n7. Removing wide object...\n";
